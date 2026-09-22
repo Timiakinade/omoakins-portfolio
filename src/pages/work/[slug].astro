@@ -1,6 +1,5 @@
 ---
 import Base from "../../layouts/Base.astro";
-import Eyebrow from "../../components/Eyebrow.astro";
 import { getProjects, shortName, site, type Project } from "../../lib/content";
 
 export async function getStaticPaths() {
@@ -23,7 +22,6 @@ const name = shortName(d.name);
   nav="work"
   type="article"
 >
-  <Eyebrow step="03 · Case study" desc={`${d.sector} project`} />
   <div class="cs-nav">
     <a class="cs-back" href="/work">← Work / {name}</a>
     <a class="btn" href="/contact">Book a call</a>

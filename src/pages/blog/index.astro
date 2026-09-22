@@ -1,11 +1,9 @@
 ---
 import Base from "../../layouts/Base.astro";
-import Eyebrow from "../../components/Eyebrow.astro";
 import { getPosts, formatDate, site } from "../../lib/content";
 const posts = await getPosts();
 ---
 <Base title={`Blog · ${site.name}`} description={site.blog.intro} og="blog" nav="blog">
-  <Eyebrow step="06 · Blog" desc="Notes on the work" />
   <div class="phead">
     <div>
       <h1 class="bebas">{site.blog.heading}</h1>

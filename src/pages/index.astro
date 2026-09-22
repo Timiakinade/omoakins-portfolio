@@ -1,6 +1,5 @@
 ---
 import Base from "../layouts/Base.astro";
-import Eyebrow from "../components/Eyebrow.astro";
 import Tile from "../components/Tile.astro";
 import Testimonials from "../components/Testimonials.astro";
 import Band from "../components/Band.astro";
@@ -11,7 +10,6 @@ const home = site.home;
 // The bento shows the first six; filtering (in site.ts) can bring any project in.
 ---
 <Base og="home" nav="home">
-  <Eyebrow step="01 · Home" desc="Bento landing — range at a glance" />
   <div class="hero">
     <div>
       <div class="avail"><span class="pulse"></span><span class="mono">{home.availability}</span></div>

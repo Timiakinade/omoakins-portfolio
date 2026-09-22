@@ -72,11 +72,7 @@
   .menu-btn{display:none;background:var(--inset);border:1px solid var(--line);
     border-radius:10px;padding:10px 14px;color:var(--ink);cursor:pointer;font-size:18px;line-height:1;}
 
-  /* eyebrow breadcrumb */
-  .eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:24px;font-size:11px;}
-  .eyebrow .step{color:var(--mint);}
-  .eyebrow .sep{color:var(--faint);}
-  .eyebrow .desc{color:var(--muted);font-family:'DM Sans',sans-serif;text-transform:none;letter-spacing:0;font-size:12px;}
+  main{padding-top:40px;}
 
   /* hero */
   .hero{display:flex;align-items:flex-end;justify-content:space-between;gap:48px;padding:56px 24px 36px;}

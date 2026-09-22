@@ -1,7 +1,6 @@
 ---
 import { render } from "astro:content";
 import Base from "../../layouts/Base.astro";
-import Eyebrow from "../../components/Eyebrow.astro";
 import { getPosts, formatDate, site, type Post } from "../../lib/content";
 
 export async function getStaticPaths() {
@@ -20,7 +19,6 @@ const { Content } = await render(post);
   nav="blog"
   type="article"
 >
-  <Eyebrow step="06 · Blog" desc={d.tags.join(" · ") || undefined} />
   <div class="cs-nav">
     <a class="cs-back" href="/blog">← Blog</a>
     <a class="btn" href="/contact">Book a call</a>

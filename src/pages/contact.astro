@@ -1,11 +1,9 @@
 ---
 import Base from "../layouts/Base.astro";
-import Eyebrow from "../components/Eyebrow.astro";
 import { site } from "../lib/content";
 const c = site.contact;
 ---
 <Base title={`Contact · ${site.name}`} description={c.pitch} og="contact" nav="contact">
-  <Eyebrow step="05 · Contact" desc="Low-friction, warm" />
   <div class="contact">
     <div class="left">
       <div class="avail"><span class="pulse"></span><span class="mono">{c.availability}</span></div>

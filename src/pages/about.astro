@@ -1,11 +1,9 @@
 ---
 import Base from "../layouts/Base.astro";
-import Eyebrow from "../components/Eyebrow.astro";
 import { site } from "../lib/content";
 const a = site.about;
 ---
 <Base title={`About · ${site.name}`} description={a.lead} og="about" nav="about">
-  <Eyebrow step="04 · About" desc="Credibility, not a bio wall" />
   <div class="about-statement">
     <span class="k mono">{a.kicker}</span>
     <h1 class="bebas">{a.headline.map((line, i) => <>{i > 0 && <br />}{line}</>)}</h1>

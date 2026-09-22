@@ -1,6 +1,5 @@
 ---
 import Base from "../../layouts/Base.astro";
-import Eyebrow from "../../components/Eyebrow.astro";
 import Tile from "../../components/Tile.astro";
 import { getProjects, site } from "../../lib/content";
 
@@ -8,7 +7,6 @@ const projects = await getProjects();
 const n = projects.length;
 ---
 <Base title={`Work · ${site.name}`} description={`Selected brand and product design work by ${site.person} — ${site.categories.join(", ")}.`} og="work" nav="work">
-  <Eyebrow step="02 · Work archive" desc="Everything, filterable" />
   <div class="phead">
     <h1 class="bebas">{site.work.heading}</h1>
     <span class="meta" data-count-for="workGrid" data-years={site.work.years}>{String(n).padStart(2, "0")} project{n === 1 ? "" : "s"} · {site.work.years}</span>
