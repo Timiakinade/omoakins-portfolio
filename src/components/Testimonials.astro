@@ -1,0 +1,22 @@
+---
+import { getTestimonials, site } from "../lib/content";
+const items = await getTestimonials();
+---
+{items.length > 0 && (
+  <section class="testimonials reveal" aria-labelledby="testimonials-label">
+    <div class="l" id="testimonials-label">{site.home.testimonialsLabel}</div>
+    <div class="t-grid">
+      {items.map(({ data: t }) => (
+        <figure class="t-card">
+          <span class="t-mark bebas" aria-hidden="true">“</span>
+          <blockquote>{t.quote}</blockquote>
+          <figcaption>
+            <span class="t-name">{t.name}</span>
+            <span class="t-role">{t.role}</span>
+          </figcaption>
+          {t.draft && <span class="draft-flag">Draft</span>}
+        </figure>
+      ))}
+    </div>
+  </section>
+)}

@@ -1,0 +1,14 @@
+---
+import Base from "../layouts/Base.astro";
+import { site } from "../lib/content";
+---
+<Base title={`Page not found · ${site.name}`} description="This page doesn't exist." og="home">
+  <div class="about-statement">
+    <span class="k mono">404</span>
+    <h1 class="bebas">This page wandered off.</h1>
+  </div>
+  <div class="cta">
+    <div class="big bebas">See the work instead →</div>
+    <a class="btn light" href="/work">View work</a>
+  </div>
+</Base>

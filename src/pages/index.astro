@@ -1,0 +1,43 @@
+---
+import Base from "../layouts/Base.astro";
+import Eyebrow from "../components/Eyebrow.astro";
+import Tile from "../components/Tile.astro";
+import Testimonials from "../components/Testimonials.astro";
+import Band from "../components/Band.astro";
+import { getProjects, site } from "../lib/content";
+
+const projects = await getProjects();
+const home = site.home;
+// The bento shows the first six; filtering (in site.ts) can bring any project in.
+---
+<Base og="home" nav="home">
+  <Eyebrow step="01 · Home" desc="Bento landing — range at a glance" />
+  <div class="hero">
+    <div>
+      <div class="avail"><span class="pulse"></span><span class="mono">{home.availability}</span></div>
+      <h1 class="bebas">{home.headline.map((line, i) => <>{i > 0 && <br />}{line}</>)}</h1>
+      <p>{home.intro}</p>
+    </div>
+    <div class="stats">
+      {home.stats.map((s, i) => (
+        <>
+          {i > 0 && <div class="div"></div>}
+          <div class="stat"><div class="num bebas">{s.value}</div><div class="lbl">{s.label}</div></div>
+        </>
+      ))}
+    </div>
+  </div>
+  <div class="filters" data-filters="bento" data-limit="6" data-feature-first>
+    <button type="button" class="chip active" data-filter="all" aria-pressed="true">All work</button>
+    {home.filters.map((c) => <button type="button" class="chip" data-filter={c} aria-pressed="false">{c}</button>)}
+  </div>
+  <div class="bento reveal" id="bento">
+    {projects.map((p, i) => (
+      <Tile project={p} featured={i === 0 && p.data.featured} hidden={i >= 6} />
+    ))}
+    <div class="empty" hidden>No projects in this category yet.</div>
+  </div>
+  <Testimonials />
+  <Band />
+</Base>
+

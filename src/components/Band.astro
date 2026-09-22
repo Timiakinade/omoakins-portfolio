@@ -1,0 +1,10 @@
+---
+import { site } from "../lib/content";
+---
+<div class="band reveal">
+  <span class="q">{site.home.bandQuestion}</span>
+  <div class="links">
+    {site.socials.map((s) => <a href={s.href} target="_blank" rel="noopener">{s.label}</a>)}
+    <a class="btn" href="/contact">{site.home.bandButton}</a>
+  </div>
+</div>

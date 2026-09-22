@@ -1,0 +1,27 @@
+{
+  "name": "Marketing Systems",
+  "category": "Marketing",
+  "sector": "Email · Comms",
+  "year": "2021—25",
+  "order": 6,
+  "featured": false,
+  "highlight": false,
+  "live": false,
+  "summary": "Email marketing, internal & external comms, and brochures that stay on-brand.",
+  "role": "Marketing Design",
+  "client": "Various",
+  "timeline": "Ongoing",
+  "deliverables": "Email systems · Internal/external comms · Brochures",
+  "tools": "Figma · HTML email",
+  "overview": "The unglamorous work that keeps a company sounding like itself: email marketing, internal and external communications, and print — built as reusable systems, not one-off files.",
+  "challenge": "Comms sprawl fast — a dozen people, a dozen templates, and the brand drifts. It had to stay coherent without a designer touching every send.",
+  "approach": "Modular templates, clear rules, and kits that non-designers can use and still stay on-brand.",
+  "outcome": "Systems that hold the voice steady across every channel — the same systems thinking product design rewards.",
+  "stat": {
+    "value": "1",
+    "caption": "Voice, every channel"
+  },
+  "preview": "web",
+  "screens": [],
+  "draft": false
+}

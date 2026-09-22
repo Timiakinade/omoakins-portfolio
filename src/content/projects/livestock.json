@@ -1,0 +1,27 @@
+{
+  "name": "Livestock Marketplace",
+  "category": "Product · UI",
+  "sector": "E-commerce",
+  "year": "2026",
+  "order": 4,
+  "featured": false,
+  "highlight": false,
+  "live": true,
+  "summary": "Group-buy for livestock and meat — coordination made simple.",
+  "role": "Product / UI Design",
+  "client": "Livestock (in progress)",
+  "timeline": "Ongoing",
+  "deliverables": "Marketplace UI · Group-buy flow · Buyer & vendor sides",
+  "tools": "Figma",
+  "overview": "A marketplace built around group buying — buyers pool orders so a whole animal gets bought without waste, and vendors sell without haggling one cut at a time.",
+  "challenge": "Group buying adds coordination most marketplaces avoid: who's in, what's left, when it closes. That state has to be obvious, not anxious.",
+  "approach": "A buy flow that shows the pool filling in real time, clear deadlines, and vendor tools that make listing a whole animal simple.",
+  "outcome": "The current build — a real problem answered in a portfolio-grade product.",
+  "stat": {
+    "value": "∞→1",
+    "caption": "Buyers, one order"
+  },
+  "preview": "grid",
+  "screens": [],
+  "draft": false
+}

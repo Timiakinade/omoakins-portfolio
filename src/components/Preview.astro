@@ -1,0 +1,27 @@
+---
+/* Tile preview: the real cover image when there is one, otherwise the abstract mockup. */
+import type { Project } from "../lib/content";
+interface Props { project: Project }
+const { project: p } = Astro.props;
+const { cover, preview, wordmark, name } = p.data;
+---
+{cover ? (
+  <img class="cover" src={cover} alt="" loading="lazy" />
+) : preview === "dashboard" ? (
+  <div class="mk"><div class="col"><div class="bar"></div><div class="row"><div class="cell"></div><div class="cell g"></div><div class="cell"></div></div><div class="block"></div></div><div class="side"></div></div>
+) : preview === "wordmark" ? (
+  <span class="wm">{wordmark || name}</span>
+) : preview === "play" ? (
+  <div class="play"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 5.5v13l11-6.5-11-6.5z" fill="#6EE7B7"/></svg></div>
+) : preview === "phones" ? (
+  <div class="mk phones">
+    <div class="phone"><div class="bar"></div><div class="blk"></div><div class="blk g"></div></div>
+    <div class="phone low"><div class="bar"></div><div class="blk tall"></div></div>
+  </div>
+) : preview === "split" ? (
+  <div class="mk-split"><div class="top"></div><div class="halves"><div></div><div class="g"></div></div></div>
+) : preview === "grid" ? (
+  <div class="mk-grid">{Array.from({ length: 6 }, (_, i) => <div class:list={{ g: i === 2 }}></div>)}</div>
+) : (
+  <div class="mk"><div class="col"><div class="bar wide"></div><div class="block short"></div><div class="row"><div class="cell"></div><div class="cell"></div></div></div></div>
+)}

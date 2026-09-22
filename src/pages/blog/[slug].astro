@@ -1,0 +1,44 @@
+---
+import { render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Eyebrow from "../../components/Eyebrow.astro";
+import { getPosts, formatDate, site, type Post } from "../../lib/content";
+
+export async function getStaticPaths() {
+  return (await getPosts()).map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props as { post: Post };
+const d = post.data;
+const { Content } = await render(post);
+---
+<Base
+  title={d.seo?.title || `${d.title} · ${site.name}`}
+  description={d.seo?.description || d.description}
+  og={`blog/${post.id}`}
+  ogImage={d.seo?.image}
+  nav="blog"
+  type="article"
+>
+  <Eyebrow step="06 · Blog" desc={d.tags.join(" · ") || undefined} />
+  <div class="cs-nav">
+    <a class="cs-back" href="/blog">← Blog</a>
+    <a class="btn" href="/contact">Book a call</a>
+  </div>
+  {d.draft && <p class="draft-banner">Draft — only visible on local and preview builds.</p>}
+  <article class="post">
+    <header class="post-head">
+      <time class="k mono" datetime={d.date.toISOString()}>{formatDate(d.date)}</time>
+      <h1 class="bebas">{d.title}</h1>
+      <p class="post-lead">{d.description}</p>
+    </header>
+    {d.cover && <img class="post-cover" src={d.cover} alt="" />}
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+  <div class="cs-next">
+    <a class="cs-back" href="/blog">Back to all posts</a>
+    <a class="btn" href="/contact">Start a project</a>
+  </div>
+</Base>

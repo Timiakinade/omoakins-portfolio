@@ -1,0 +1,37 @@
+---
+import Base from "../../layouts/Base.astro";
+import Eyebrow from "../../components/Eyebrow.astro";
+import { getPosts, formatDate, site } from "../../lib/content";
+const posts = await getPosts();
+---
+<Base title={`Blog · ${site.name}`} description={site.blog.intro} og="blog" nav="blog">
+  <Eyebrow step="06 · Blog" desc="Notes on the work" />
+  <div class="phead">
+    <div>
+      <h1 class="bebas">{site.blog.heading}</h1>
+      <p class="phead-intro">{site.blog.intro}</p>
+    </div>
+  </div>
+  {posts.length === 0 ? (
+    <div class="empty">First posts coming soon.</div>
+  ) : (
+    <div class="grid3 reveal">
+      {posts.map((p) => (
+        <a class="tile post-tile" href={`/blog/${p.id}`}>
+          <div class="tile-head">
+            <div class="tile-tags">{p.data.tags.slice(0, 2).map((t) => <span class="pill">{t}</span>)}</div>
+            <time class="year" datetime={p.data.date.toISOString()}>{formatDate(p.data.date)}</time>
+          </div>
+          <div class="prev">
+            {p.data.cover ? <img class="cover" src={p.data.cover} alt="" loading="lazy" /> : <span class="wm">{site.name}</span>}
+          </div>
+          <div>
+            <div class="pname">{p.data.title}</div>
+            <div class="pdesc">{p.data.description}</div>
+          </div>
+          {p.data.draft && <span class="draft-flag">Draft</span>}
+        </a>
+      ))}
+    </div>
+  )}
+</Base>

@@ -4,3 +4,9 @@ node_modules/
 *.log
 .vscode/
 .idea/
+
+# Astro
+dist/
+.astro/
+.vercel/
+.env*

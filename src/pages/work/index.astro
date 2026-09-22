@@ -1,0 +1,27 @@
+---
+import Base from "../../layouts/Base.astro";
+import Eyebrow from "../../components/Eyebrow.astro";
+import Tile from "../../components/Tile.astro";
+import { getProjects, site } from "../../lib/content";
+
+const projects = await getProjects();
+const n = projects.length;
+---
+<Base title={`Work · ${site.name}`} description={`Selected brand and product design work by ${site.person} — ${site.categories.join(", ")}.`} og="work" nav="work">
+  <Eyebrow step="02 · Work archive" desc="Everything, filterable" />
+  <div class="phead">
+    <h1 class="bebas">{site.work.heading}</h1>
+    <span class="meta" data-count-for="workGrid" data-years={site.work.years}>{String(n).padStart(2, "0")} project{n === 1 ? "" : "s"} · {site.work.years}</span>
+  </div>
+  <div class="sortbar">
+    <div class="filters" data-filters="workGrid" style="padding:0;">
+      <button type="button" class="chip active" data-filter="all" aria-pressed="true">All</button>
+      {site.categories.map((c) => <button type="button" class="chip" data-filter={c} aria-pressed="false">{c}</button>)}
+    </div>
+    <span class="meta">Newest first ▾</span>
+  </div>
+  <div class="grid3 reveal" id="workGrid">
+    {projects.map((p) => <Tile project={p} />)}
+    <div class="empty" hidden>No projects in this category yet.</div>
+  </div>
+</Base>

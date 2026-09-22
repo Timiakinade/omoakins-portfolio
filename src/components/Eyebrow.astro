@@ -1,0 +1,5 @@
+---
+interface Props { step: string; desc?: string }
+const { step, desc } = Astro.props;
+---
+<div class="eyebrow"><span class="mono step">{step}</span>{desc && <><span class="sep">·</span><span class="desc">{desc}</span></>}</div>

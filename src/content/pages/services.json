@@ -1,0 +1,34 @@
+{
+  "title": "Services",
+  "description": "Placeholder landing page showing every section type. Replace with a real page, or delete it.",
+  "draft": true,
+  "sections": [
+    {
+      "type": "hero",
+      "eyebrow": "Placeholder landing page",
+      "headline": ["Brand and product,", "one designer."],
+      "intro": "This sample page shows every section a landing page can use: hero, text, image, stats, quote, projects and call to action. It's a draft, so it never appears on the live site.",
+      "button": { "label": "Start a project", "href": "/contact" }
+    },
+    {
+      "type": "text",
+      "label": "What this is",
+      "body": [
+        "A text section. Use it for the story: who the page is for and what they get.",
+        "Each entry becomes its own paragraph."
+      ]
+    },
+    { "type": "image", "alt": "", "caption": "An image section — drop a real screen or photo here." },
+    {
+      "type": "stats",
+      "items": [
+        { "value": "5+", "label": "Years" },
+        { "value": "30+", "label": "Projects" },
+        { "value": "04", "label": "Verticals" }
+      ]
+    },
+    { "type": "quote", "text": "\"A quote section, for a line worth pulling out.\"", "source": "Name · Role" },
+    { "type": "projects", "label": "Related work", "projects": ["providus", "faith", "livestock"] },
+    { "type": "cta", "headline": "Let's work together →", "button": { "label": "Start a project", "href": "/contact" } }
+  ]
+}
