@@ -73,7 +73,6 @@ const active = (href: string) => (nav === "home" ? href === "/" : !!nav && href 
     </nav>
     <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
   </header>
-  {preview && <p class="preview-banner">Preview — this is your draft. Nothing here is live until you press Publish.</p>}
   <main>
     <slot />
   </main>

@@ -105,6 +105,155 @@ export const SECTION_TYPES = {
   },
 } satisfies Record<string, { label: string; fields: Field[]; blank: () => Record<string, unknown> }>;
 
+/* Site settings is one item, edited one page at a time from the sidebar.
+   `keys` are the parts of Site settings that screen owns (and publishes). */
+export const SETTINGS_SCREENS: Record<string, { keys: string[]; fields: Field[] }> = {
+  home: {
+    keys: ["home", "title", "description", "tagline"],
+    fields: [
+      {
+        kind: "group", key: "home", label: "Home page", fields: [
+          {
+            kind: "layout", key: "layout", label: "Sections, top to bottom",
+            help: "Use the arrows to reorder. Untick to hide a section.",
+            names: {
+              intro: "Big headline, intro and numbers",
+              work: "Work tiles and filters",
+              testimonials: "Testimonials",
+              footer: "Footer bar (question, social links, button)",
+            },
+          },
+          { kind: "text", key: "availability", label: "Availability line (above the headline)" },
+          { kind: "lines", key: "headline", label: "Big headline (top of the page)", help: "Each line of text becomes its own line." },
+          { kind: "textarea", key: "intro", label: "Intro (under the headline)" },
+          {
+            kind: "list", key: "stats", item: "number", label: "Numbers beside the headline",
+            fields: [
+              { kind: "text", key: "value", label: "Number", placeholder: "5+" },
+              { kind: "text", key: "label", label: "Label", placeholder: "Years" },
+            ],
+            blank: () => ({ value: "", label: "" }),
+          },
+          { kind: "lines", key: "filters", label: "Filter buttons above the work tiles", help: "One per line, matching the work categories (Work in the sidebar)." },
+          { kind: "text", key: "testimonialsLabel", label: "Testimonials heading" },
+          { kind: "text", key: "bandQuestion", label: "Footer bar question" },
+          { kind: "text", key: "bandButton", label: "Footer bar button text" },
+        ],
+      },
+      {
+        kind: "fieldset", label: "Google & link previews", fields: [
+          { kind: "text", key: "title", label: "Browser tab and Google title" },
+          { kind: "textarea", key: "description", label: "Google description" },
+          { kind: "text", key: "tagline", label: "Headline on the share image", help: "Only on the picture shown when someone shares your home page link. Not on the page itself." },
+        ],
+      },
+    ],
+  },
+  work: {
+    keys: ["work", "categories"],
+    fields: [
+      {
+        kind: "group", key: "work", label: "Work page text", fields: [
+          { kind: "text", key: "heading", label: "Heading" },
+          { kind: "text", key: "years", label: "Years shown", placeholder: "2021—2026" },
+        ],
+      },
+      { kind: "lines", key: "categories", label: "Work categories", help: "One per line. Each project picks one; the Work page filters by them." },
+    ],
+  },
+  blog: {
+    keys: ["blog"],
+    fields: [
+      {
+        kind: "group", key: "blog", label: "Blog page text", fields: [
+          { kind: "text", key: "heading", label: "Heading" },
+          { kind: "textarea", key: "intro", label: "Intro" },
+        ],
+      },
+    ],
+  },
+  about: {
+    keys: ["about"],
+    fields: [
+      {
+        kind: "group", key: "about", label: "About page", fields: [
+          { kind: "text", key: "kicker", label: "Small label (above the headline)" },
+          { kind: "lines", key: "headline", label: "Big headline", help: "Each line of text becomes its own line." },
+          { kind: "image", key: "portrait", label: "Portrait" },
+          { kind: "textarea", key: "lead", label: "First paragraph" },
+          { kind: "textarea", key: "body", label: "Second paragraph" },
+          { kind: "lines", key: "whatIDo", label: "What I do", help: "One per line." },
+          { kind: "lines", key: "whereIWork", label: "Where I work", help: "One per line." },
+          { kind: "lines", key: "workedAcross", label: "Worked across (big words)", help: "One per line." },
+          { kind: "textarea", key: "quote", label: "Quote" },
+          { kind: "text", key: "quoteSource", label: "Quote source" },
+          { kind: "text", key: "ctaHeadline", label: "Green bar headline" },
+          { kind: "text", key: "ctaButton", label: "Green bar button" },
+        ],
+      },
+    ],
+  },
+  contact: {
+    keys: ["contact", "email", "callLink"],
+    fields: [
+      {
+        kind: "group", key: "contact", label: "Contact page", fields: [
+          { kind: "text", key: "availability", label: "Availability line" },
+          { kind: "lines", key: "headline", label: "Big headline", help: "Each line of text becomes its own line." },
+          { kind: "textarea", key: "pitch", label: "Intro" },
+          { kind: "text", key: "callLabel", label: "Book-a-call link text" },
+          { kind: "lines", key: "projectTypes", label: "Project types on the form", help: "One per line." },
+        ],
+      },
+      {
+        kind: "fieldset", label: "Contact details", fields: [
+          { kind: "text", key: "email", label: "Contact email" },
+          { kind: "url", key: "callLink", label: "Book-a-call link", help: "e.g. your Calendly link." },
+        ],
+      },
+    ],
+  },
+  menu: {
+    keys: ["nav", "navButton", "socials", "name", "person"],
+    fields: [
+      {
+        kind: "fieldset", label: "Top menu", fields: [
+          {
+            kind: "list", key: "nav", item: "menu link", label: "Menu links, left to right",
+            help: "Remove a link to hide that page from the menu (the page still exists). A Blog link only appears once a post is published. To link a landing page, use its address, e.g. /services.",
+            fields: [
+              { kind: "text", key: "label", label: "Text", placeholder: "Work" },
+              { kind: "url", key: "href", label: "Goes to", placeholder: "/work" },
+            ],
+            blank: () => ({ label: "", href: "/" }),
+          },
+          {
+            kind: "group", key: "navButton", label: "Green menu button", help: "Leave the text empty for no button.",
+            fields: [
+              { kind: "text", key: "label", label: "Button text" },
+              { kind: "url", key: "href", label: "Goes to" },
+            ],
+          },
+        ],
+      },
+      {
+        kind: "list", key: "socials", item: "link", label: "Social links (footer bar and Contact page)",
+        fields: [
+          { kind: "text", key: "label", label: "Name", placeholder: "LinkedIn" },
+          { kind: "url", key: "href", label: "Link" },
+        ],
+        blank: () => ({ label: "", href: "" }),
+      },
+      {
+        kind: "fieldset", label: "Names", fields: [
+          { kind: "text", key: "name", label: "Site name (next to the logo)" },
+          { kind: "text", key: "person", label: "Your first name" },
+        ],
+      },
+    ],
+  },
+};
+
 export const FIELDS: Record<EntryType, Field[]> = {
   project: [
     {
@@ -182,114 +331,7 @@ export const FIELDS: Record<EntryType, Field[]> = {
     { kind: "text", key: "role", label: "Role and company", placeholder: "Head of Marketing, Acme" },
     { kind: "number", key: "order", label: "Position", help: "1 shows first." },
   ],
-  settings: [
-    {
-      kind: "fieldset", label: "Everywhere", fields: [
-        { kind: "text", key: "name", label: "Site name" },
-        { kind: "text", key: "person", label: "Your first name" },
-        { kind: "text", key: "title", label: "Browser tab / Google title for the home page" },
-        { kind: "textarea", key: "description", label: "Google description for the home page" },
-        { kind: "text", key: "tagline", label: "Tagline (used on the home share image)" },
-        { kind: "text", key: "email", label: "Contact email" },
-        { kind: "url", key: "callLink", label: "Book-a-call link", help: "e.g. your Calendly link." },
-        {
-          kind: "list", key: "socials", item: "link", label: "Social links",
-          fields: [
-            { kind: "text", key: "label", label: "Name", placeholder: "LinkedIn" },
-            { kind: "url", key: "href", label: "Link" },
-          ],
-          blank: () => ({ label: "", href: "" }),
-        },
-        { kind: "lines", key: "categories", label: "Work categories", help: "One per line. Each project picks one; the Work page filters by them." },
-      ],
-    },
-    {
-      kind: "fieldset", label: "Top menu", fields: [
-        {
-          kind: "list", key: "nav", item: "menu link", label: "Menu links, left to right",
-          help: "Remove a link to hide that page from the menu (the page still exists). A Blog link only appears once a post is published. To link a landing page, use its address, e.g. /services.",
-          fields: [
-            { kind: "text", key: "label", label: "Text", placeholder: "Work" },
-            { kind: "url", key: "href", label: "Goes to", placeholder: "/work" },
-          ],
-          blank: () => ({ label: "", href: "/" }),
-        },
-        {
-          kind: "group", key: "navButton", label: "Green menu button", help: "Leave the text empty for no button.",
-          fields: [
-            { kind: "text", key: "label", label: "Button text" },
-            { kind: "url", key: "href", label: "Goes to" },
-          ],
-        },
-      ],
-    },
-    {
-      kind: "group", key: "home", label: "Home page", fields: [
-        {
-          kind: "layout", key: "layout", label: "Sections, top to bottom",
-          help: "Use the arrows to reorder. Untick to hide a section.",
-          names: {
-            intro: "Headline, intro and numbers",
-            work: "Work tiles and filters",
-            testimonials: "Testimonials",
-            footer: "Footer bar (question, social links, button)",
-          },
-        },
-        { kind: "text", key: "availability", label: "Availability line" },
-        { kind: "lines", key: "headline", label: "Headline", help: "Each line of text becomes its own line." },
-        { kind: "textarea", key: "intro", label: "Intro" },
-        {
-          kind: "list", key: "stats", item: "number", label: "Numbers beside the headline",
-          fields: [
-            { kind: "text", key: "value", label: "Number", placeholder: "5+" },
-            { kind: "text", key: "label", label: "Label", placeholder: "Years" },
-          ],
-          blank: () => ({ value: "", label: "" }),
-        },
-        { kind: "lines", key: "filters", label: "Filter buttons", help: "One per line, matching the work categories." },
-        { kind: "text", key: "testimonialsLabel", label: "Testimonials heading" },
-        { kind: "text", key: "bandQuestion", label: "Footer question" },
-        { kind: "text", key: "bandButton", label: "Footer button text" },
-      ],
-    },
-    {
-      kind: "group", key: "work", label: "Work page", fields: [
-        { kind: "text", key: "heading", label: "Heading" },
-        { kind: "text", key: "years", label: "Years shown", placeholder: "2021—2026" },
-      ],
-    },
-    {
-      kind: "group", key: "blog", label: "Blog page", fields: [
-        { kind: "text", key: "heading", label: "Heading" },
-        { kind: "textarea", key: "intro", label: "Intro" },
-      ],
-    },
-    {
-      kind: "group", key: "about", label: "About page", fields: [
-        { kind: "text", key: "kicker", label: "Small label" },
-        { kind: "lines", key: "headline", label: "Headline", help: "Each line of text becomes its own line." },
-        { kind: "image", key: "portrait", label: "Portrait" },
-        { kind: "textarea", key: "lead", label: "First paragraph" },
-        { kind: "textarea", key: "body", label: "Second paragraph" },
-        { kind: "lines", key: "whatIDo", label: "What I do", help: "One per line." },
-        { kind: "lines", key: "whereIWork", label: "Where I work", help: "One per line." },
-        { kind: "lines", key: "workedAcross", label: "Worked across (big words)", help: "One per line." },
-        { kind: "textarea", key: "quote", label: "Quote" },
-        { kind: "text", key: "quoteSource", label: "Quote source" },
-        { kind: "text", key: "ctaHeadline", label: "Green bar headline" },
-        { kind: "text", key: "ctaButton", label: "Green bar button" },
-      ],
-    },
-    {
-      kind: "group", key: "contact", label: "Contact page", fields: [
-        { kind: "text", key: "availability", label: "Availability line" },
-        { kind: "lines", key: "headline", label: "Headline", help: "Each line of text becomes its own line." },
-        { kind: "textarea", key: "pitch", label: "Intro" },
-        { kind: "text", key: "callLabel", label: "Book-a-call link text" },
-        { kind: "lines", key: "projectTypes", label: "Project types on the form", help: "One per line." },
-      ],
-    },
-  ],
+  settings: [...Object.values(SETTINGS_SCREENS).flatMap((x) => x.fields)],
 };
 
 export const TYPE_LABELS: Record<EntryType, { one: string; many: string }> = {

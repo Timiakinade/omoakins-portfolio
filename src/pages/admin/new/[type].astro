@@ -4,10 +4,12 @@ export const prerender = false;
 import AdminLayout from "../../../layouts/AdminLayout.astro";
 import { TYPE_LABELS, SECTION_TYPES, publicPath } from "../../../admin/fields";
 import { RESERVED_SLUGS } from "../../../lib/content";
+import { screenFor } from "../../../admin/nav";
 import type { EntryType } from "../../../lib/schema";
 
 const type = Astro.params.type as EntryType;
-if (!["project", "post", "page", "testimonial"].includes(type)) return Astro.redirect("/admin");
+if (!["project", "post", "page", "testimonial"].includes(type)) return Astro.redirect("/admin/home");
+const back = screenFor(type);
 const db = Astro.locals.supabase;
 const label = TYPE_LABELS[type].one;
 
@@ -45,8 +47,8 @@ if (Astro.request.method === "POST") {
 }
 const prefix = type === "testimonial" ? "" : publicPath(type, "").replace(/\/$/, "") + "/";
 ---
-<AdminLayout title={`New ${label.toLowerCase()}`} email={Astro.locals.email}>
-  <a class="a-back" href="/admin">← Overview</a>
+<AdminLayout title={`New ${label.toLowerCase()}`} email={Astro.locals.email} active={back}>
+  <a class="a-back" href={`/admin/${back}`}>← Back</a>
   <h1 class="a-title">New {label.toLowerCase()}</h1>
   <form method="post" class="a-card a-new">
     <label class="a-label" for="title">{type === "testimonial" ? "Person's name" : "Title"}</label>

@@ -9,7 +9,7 @@ import { schemas, type EntryType } from "../../../lib/schema";
 const fail = (error: string, status = 400) => Response.json({ error }, { status });
 
 export const POST: APIRoute = async ({ params, request, locals }) => {
-  const { type, slug } = (await request.json().catch(() => ({}))) as { type?: EntryType; slug?: string };
+  const { type, slug, keys } = (await request.json().catch(() => ({}))) as { type?: EntryType; slug?: string; keys?: string[] };
   if (!type || !slug || !(type in schemas)) return fail("Missing or unknown item.");
   const db = locals.supabase;
   const row = await db.from("entries").select("draft, published").eq("type", type).eq("slug", slug).maybeSingle();
@@ -21,14 +21,20 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       if (type === "page" && RESERVED_SLUGS.includes(slug)) {
         return fail(`"/${slug}" is already used by the site. Create the page again with a different address.`);
       }
-      const parsed = schemas[type].safeParse(row.data.draft);
+      // A Site settings screen publishes only its own part; the rest stays as it is live.
+      const { draft, published } = row.data;
+      const next =
+        type === "settings" && Array.isArray(keys) && published
+          ? { ...published, ...Object.fromEntries(keys.filter((k) => k in draft).map((k) => [k, draft[k]])) }
+          : draft;
+      const parsed = schemas[type].safeParse(next);
       if (!parsed.success) {
         const problems = parsed.error.issues.map((i) => `${i.path.join(" › ") || "Item"}: ${i.message}`);
         return Response.json({ error: "Fix these before publishing:", problems }, { status: 422 });
       }
       const res = await db
         .from("entries")
-        .update({ published: row.data.draft, published_at: new Date().toISOString() })
+        .update({ published: next, published_at: new Date().toISOString() })
         .eq("type", type)
         .eq("slug", slug);
       if (res.error) return fail(res.error.message, 500);

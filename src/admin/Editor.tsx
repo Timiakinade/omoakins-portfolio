@@ -5,6 +5,8 @@ import type { ComponentChildren } from "preact";
 import { supabase } from "../lib/supabase-browser";
 import type { EntryType } from "../lib/schema";
 import { FIELDS, SECTION_TYPES, TYPE_LABELS, publicPath, type Field } from "./fields";
+import { screenFor } from "./nav";
+import { pick, status as liveStatus } from "./status";
 
 type Obj = Record<string, any>;
 interface Ctx { categories: string[]; projects: { slug: string; name: string }[] }
@@ -16,6 +18,9 @@ interface Props {
   published: Obj | null;
   categories: string[];
   projects: { slug: string; name: string }[];
+  fields?: Field[]; // defaults to every field for the type
+  keys?: string[]; // Site settings: the parts this screen edits and publishes
+  previewPage?: string; // Site settings: which page Preview shows
 }
 
 /* ---------- image upload (Supabase Storage, bucket "media") ---------- */
@@ -326,19 +331,21 @@ function Fields({ fields, value, onChange, ctx }: { fields: Field[]; value: Obj;
 }
 
 /* ---------- the editor ---------- */
-type Status = { kind: "idle" | "busy" | "ok" | "error"; text: string; problems?: string[] };
+type Status = { kind: "idle" | "busy" | "ok" | "info" | "error"; text: string; problems?: string[] };
+
+const LIVE_PATHS: Record<string, string> = { home: "/", work: "/work", blog: "/blog", about: "/about", contact: "/contact" };
 
 export default function Editor(props: Props) {
-  const { type, slug } = props;
+  const { type, slug, keys } = props;
   const [value, setValue] = useState<Obj>(props.draft);
   const [saved, setSaved] = useState(JSON.stringify(props.draft));
-  const [published, setPublished] = useState<string | null>(props.published ? JSON.stringify(props.published) : null);
+  const [published, setPublished] = useState<Obj | null>(props.published);
   const [status, setStatus] = useState<Status>({ kind: "idle", text: "" });
-  const [previewPage, setPreviewPage] = useState("home");
   const dirty = JSON.stringify(value) !== saved;
-  const live = published !== null;
-  const liveMatches = live && published === saved && !dirty;
+  // On a Site settings screen, only this screen's part counts.
+  const state = liveStatus(pick(JSON.parse(saved), keys), pick(published, keys));
   const labels = TYPE_LABELS[type];
+  const home = `/admin/${screenFor(type)}`;
 
   useEffect(() => {
     const warn = (e: BeforeUnloadEvent) => { if (dirty) e.preventDefault(); };
@@ -360,10 +367,10 @@ export default function Editor(props: Props) {
   }
 
   async function preview() {
-    const tab = window.open("about:blank", "_blank"); // open now so pop-up blockers allow it
-    if (!(await save())) return tab?.close();
-    const q = type === "settings" ? `?page=${previewPage}` : "";
-    if (tab) tab.location.href = `/preview/${type}/${slug}${q}`;
+    if (!(await save())) return;
+    const q = new URLSearchParams({ back: location.pathname });
+    if (props.previewPage) q.set("page", props.previewPage);
+    location.href = `/admin/preview/${type}/${slug}?${q}`;
   }
 
   async function act(action: "publish" | "unpublish" | "delete") {
@@ -374,44 +381,33 @@ export default function Editor(props: Props) {
     const res = await fetch(`/api/admin/${action}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type, slug }),
+      body: JSON.stringify({ type, slug, keys }),
     });
     const body = await res.json().catch(() => ({ error: "Something went wrong." }));
     if (!res.ok) return setStatus({ kind: "error", text: body.error, problems: body.problems });
-    if (action === "delete") return (location.href = "/admin");
-    setPublished(action === "publish" ? JSON.stringify(value) : null);
-    const rebuild =
-      body.rebuild === "started" ? " The live site updates in about a minute."
-      : body.rebuild === "not-configured" ? " The site rebuild isn't connected yet, so the live site won't change until it is."
-      : " The site rebuild didn't start; try Publish again in a minute.";
-    setStatus({ kind: body.rebuild === "started" ? "ok" : "error", text: (action === "publish" ? "Published." : "Taken off the live site.") + rebuild });
+    if (action === "delete") return (location.href = home);
+    setPublished(action === "publish" ? (keys ? { ...published, ...pick(value, keys) } : value) : null);
+    const done = action === "publish" ? "Published." : "Taken off the live site.";
+    if (body.rebuild === "started") setStatus({ kind: "ok", text: `${done} The live site updates in about a minute.` });
+    else if (body.rebuild === "not-configured")
+      setStatus({ kind: "info", text: `${done} Your change is saved as live, and shows on the website once automatic updates are switched on (the last setup step).` });
+    else setStatus({ kind: "error", text: `${done} But the website didn't start updating. Press Publish again in a minute.` });
   }
 
   const ctx: Ctx = { categories: props.categories, projects: props.projects };
-  const path = publicPath(type, slug);
+  const livePath = type === "settings" ? LIVE_PATHS[props.previewPage ?? "home"] ?? "/" : publicPath(type, slug);
 
   return (
     <div class="editor">
       <div class="e-bar">
         <div class="e-state">
-          <span class={`badge ${liveMatches ? "live" : live ? "changed" : "draft"}`}>
-            {liveMatches ? "Live" : live ? "Live · changes not published" : "Draft · not live"}
-          </span>
+          <span class={`badge ${state.cls}`}>{state.text}</span>
           {dirty && <span class="badge unsaved">Unsaved changes</span>}
         </div>
         <div class="e-actions">
-          {type === "settings" && (
-            <select class="a-input f-small" value={previewPage} onChange={(e) => setPreviewPage(e.currentTarget.value)} aria-label="Page to preview">
-              <option value="home">Preview: Home</option>
-              <option value="work">Preview: Work</option>
-              <option value="about">Preview: About</option>
-              <option value="contact">Preview: Contact</option>
-              <option value="blog">Preview: Blog</option>
-            </select>
-          )}
           <button type="button" class="a-btn" onClick={save} disabled={!dirty || status.kind === "busy"}>Save draft</button>
           <button type="button" class="a-btn" onClick={preview} disabled={status.kind === "busy"}>Preview</button>
-          <button type="button" class="a-btn primary" onClick={() => act("publish")} disabled={status.kind === "busy" || liveMatches}>Publish</button>
+          <button type="button" class="a-btn primary" onClick={() => act("publish")} disabled={status.kind === "busy" || (state.cls === "live" && !dirty)}>Publish</button>
         </div>
       </div>
       {status.text && (
@@ -422,14 +418,14 @@ export default function Editor(props: Props) {
       )}
 
       <form class="e-form" onSubmit={(e) => { e.preventDefault(); save(); }}>
-        <Fields fields={FIELDS[type]} value={value} onChange={setValue} ctx={ctx} />
+        <Fields fields={props.fields ?? FIELDS[type]} value={value} onChange={setValue} ctx={ctx} />
       </form>
 
       <div class="e-foot">
-        {live && type !== "testimonial" && <a href={path} target="_blank" rel="noopener">View live page ↗</a>}
+        {state.cls !== "draft" && type !== "testimonial" ? <a href={livePath} target="_blank" rel="noopener">View live page ↗</a> : <span />}
         {type !== "settings" && (
           <span class="e-danger">
-            {live && <button type="button" class="a-link" onClick={() => act("unpublish")}>Take off live site</button>}
+            {state.cls !== "draft" && <button type="button" class="a-link" onClick={() => act("unpublish")}>Take off live site</button>}
             <button type="button" class="a-link danger" onClick={() => act("delete")}>Delete</button>
           </span>
         )}

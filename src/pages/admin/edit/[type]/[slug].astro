@@ -3,23 +3,19 @@ export const prerender = false;
 import AdminLayout from "../../../../layouts/AdminLayout.astro";
 import Editor from "../../../../admin/Editor";
 import { TYPE_LABELS, itemTitle } from "../../../../admin/fields";
-import { ENTRY_TYPES, siteSchema, type EntryType } from "../../../../lib/schema";
+import { SCREENS, screenFor } from "../../../../admin/nav";
+import { ENTRY_TYPES, type EntryType } from "../../../../lib/schema";
 
 const { type, slug } = Astro.params as { type: EntryType; slug: string };
-if (!ENTRY_TYPES.includes(type)) return Astro.redirect("/admin");
+if (!ENTRY_TYPES.includes(type) || type === "settings") return Astro.redirect("/admin/home");
 const db = Astro.locals.supabase;
 
 const [{ data: row }, { data: others }] = await Promise.all([
   db.from("entries").select("draft, published").eq("type", type).eq("slug", slug).maybeSingle(),
   db.from("entries").select("type, slug, draft").in("type", ["project", "settings"]),
 ]);
-if (!row) return Astro.redirect("/admin");
-
-// Settings saved before a newer option existed (menu, Home order) get that option's default.
-const parsedSettings = type === "settings" ? siteSchema.safeParse(row.draft) : null;
-const draft = parsedSettings?.success ? parsedSettings.data : row.draft;
-const parsedLive = type === "settings" && row.published ? siteSchema.safeParse(row.published) : null;
-const published = parsedLive?.success ? parsedLive.data : row.published;
+const screen = SCREENS.find((s) => s.key === screenFor(type))!;
+if (!row) return Astro.redirect(`/admin/${screen.key}`);
 
 const categories: string[] = others?.find((r) => r.type === "settings")?.draft.categories ?? [];
 const projects = (others ?? [])
@@ -27,9 +23,9 @@ const projects = (others ?? [])
   .sort((a, b) => Number(a.draft.order) - Number(b.draft.order))
   .map((r) => ({ slug: r.slug, name: String(r.draft.name ?? r.slug) }));
 ---
-<AdminLayout title={itemTitle(type, row.draft)} email={Astro.locals.email}>
-  <a class="a-back" href="/admin">← Overview</a>
+<AdminLayout title={itemTitle(type, row.draft)} email={Astro.locals.email} active={screen.key}>
+  <a class="a-back" href={`/admin/${screen.key}`}>← {screen.label}</a>
   <p class="a-kicker">{TYPE_LABELS[type].one}</p>
   <h1 class="a-title">{itemTitle(type, row.draft)}</h1>
-  <Editor client:only="preact" type={type} slug={slug} draft={draft} published={published} categories={categories} projects={projects} />
+  <Editor client:only="preact" type={type} slug={slug} draft={row.draft} published={row.published} categories={categories} projects={projects} />
 </AdminLayout>
