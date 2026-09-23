@@ -15,34 +15,83 @@ const seo = z
 
 export const PREVIEWS = ["dashboard", "wordmark", "play", "phones", "split", "grid", "web"] as const;
 
-export const projectSchema = z.object({
-  name: required("Name"),
-  category: z.string(), // must match one of site.categories for filters to catch it
-  sector: z.string(), // e.g. "Finance" — the small pill on the tile
-  year: z.string(),
-  order: z.number(), // position on Home / Work (1 = first)
-  featured: z.boolean().default(false), // wide tile on Home
-  highlight: z.boolean().default(false), // green tile
-  live: z.boolean().default(false), // "Live" pill instead of the year
-  wordmark: z.string().optional(), // text shown on a highlighted tile
-  summary: z.string(),
-  role: z.string(),
-  client: z.string(),
-  timeline: z.string(),
-  deliverables: z.string(),
-  tools: z.string(),
-  overview: z.string(),
-  challenge: z.string(),
-  approach: z.string(),
-  outcome: z.string(),
-  stat: z.object({ value: z.string(), caption: z.string() }),
-  // Abstract tile preview used until a real cover image exists.
-  preview: z.enum(PREVIEWS).default("dashboard"),
-  cover: z.string().optional(), // tile image
-  heroImage: z.string().optional(), // big image at the top of the case study
-  screens: z.array(z.object({ src: z.string(), alt: z.string() })).default([]),
-  seo,
-});
+/* Case-study body: a list of sections Timi can add, remove, reorder and rename. */
+const labelled = z.object({ label: z.string(), value: z.string() });
+export const caseSectionSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("text"), // heading + paragraphs, optional small side column (e.g. Deliverables / Tools)
+    heading: z.string(),
+    body: z.array(z.string()),
+    side: z.array(labelled).default([]),
+  }),
+  z.object({
+    type: z.literal("cards"), // boxes side by side (e.g. The challenge / The approach)
+    cards: z.array(z.object({ heading: z.string(), text: z.string() })),
+  }),
+  z.object({
+    type: z.literal("images"), // a row of screens; shows a placeholder until images are added
+    heading: z.string().optional(),
+    images: z.array(z.object({ src: z.string(), alt: z.string(), caption: z.string().optional() })).default([]),
+  }),
+  z.object({
+    type: z.literal("number"), // text beside a big green number (e.g. Outcome)
+    heading: z.string(),
+    text: z.string(),
+    value: z.string(),
+    caption: z.string(),
+  }),
+]);
+
+/** Projects saved before case studies became flexible: turn the fixed fields into sections. */
+function upgradeProject(v: unknown) {
+  if (!v || typeof v !== "object" || "sections" in v) return v;
+  const { role, client, timeline, deliverables, tools, overview, challenge, approach, outcome, stat, screens, ...rest } =
+    v as Record<string, any>;
+  return {
+    ...rest,
+    facts: [
+      { label: "Role", value: role ?? "" },
+      { label: "Client", value: client ?? "" },
+      { label: "Year", value: rest.year ?? "" },
+      { label: "Timeline", value: timeline ?? "" },
+    ],
+    sections: [
+      {
+        type: "text", heading: "Overview", body: [overview ?? ""],
+        side: [{ label: "Deliverables", value: deliverables ?? "" }, { label: "Tools", value: tools ?? "" }],
+      },
+      { type: "cards", cards: [{ heading: "The challenge", text: challenge ?? "" }, { heading: "The approach", text: approach ?? "" }] },
+      { type: "images", images: screens ?? [] },
+      { type: "number", heading: "Outcome", text: outcome ?? "", value: stat?.value ?? "", caption: stat?.caption ?? "" },
+    ],
+  };
+}
+
+export const projectSchema = z.preprocess(
+  upgradeProject,
+  z.object({
+    name: required("Name"),
+    category: z.string(), // must match one of site.categories for filters to catch it
+    sector: z.string(), // e.g. "Finance" — the small pill on the tile
+    year: z.string(), // shown on the tile
+    order: z.number(), // position on Home / Work (1 = first)
+    featured: z.boolean().default(false), // wide tile on Home
+    highlight: z.boolean().default(false), // green tile
+    live: z.boolean().default(false), // "Live" pill instead of the year
+    wordmark: z.string().optional(), // text shown on a highlighted tile
+    summary: z.string(),
+    // Abstract tile preview used until a real cover image exists.
+    preview: z.enum(PREVIEWS).default("dashboard"),
+    cover: z.string().optional(), // tile image
+    facts: z.array(labelled), // the row under the title: Role, Client, Year…
+    heroImage: z.string().optional(), // big image at the top of the case study
+    sections: z.array(caseSectionSchema),
+    seo,
+  }),
+);
+
+/** A project in the current shape (used by the dashboard before editing an older project). */
+export const upgradeProjectData = (v: Record<string, unknown>) => upgradeProject(v) as Record<string, unknown>;
 
 export const postSchema = z.object({
   title: required("Title"),

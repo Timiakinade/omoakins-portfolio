@@ -4,7 +4,7 @@ import AdminLayout from "../../../../layouts/AdminLayout.astro";
 import Editor from "../../../../admin/Editor";
 import { TYPE_LABELS, itemTitle } from "../../../../admin/fields";
 import { SCREENS, screenFor } from "../../../../admin/nav";
-import { ENTRY_TYPES, type EntryType } from "../../../../lib/schema";
+import { ENTRY_TYPES, upgradeProjectData, type EntryType } from "../../../../lib/schema";
 
 const { type, slug } = Astro.params as { type: EntryType; slug: string };
 if (!ENTRY_TYPES.includes(type) || type === "settings") return Astro.redirect("/admin/home");
@@ -17,6 +17,10 @@ const [{ data: row }, { data: others }] = await Promise.all([
 const screen = SCREENS.find((s) => s.key === screenFor(type))!;
 if (!row) return Astro.redirect(`/admin/${screen.key}`);
 
+// Projects saved before case studies became flexible open in the new shape (both sides, so status compares fairly).
+const draft = type === "project" ? upgradeProjectData(row.draft) : row.draft;
+const published = type === "project" && row.published ? upgradeProjectData(row.published) : row.published;
+
 const categories: string[] = others?.find((r) => r.type === "settings")?.draft.categories ?? [];
 const projects = (others ?? [])
   .filter((r) => r.type === "project")
@@ -27,5 +31,5 @@ const projects = (others ?? [])
   <a class="a-back" href={`/admin/${screen.key}`}>← {screen.label}</a>
   <p class="a-kicker">{TYPE_LABELS[type].one}</p>
   <h1 class="a-title">{itemTitle(type, row.draft)}</h1>
-  <Editor client:only="preact" type={type} slug={slug} draft={row.draft} published={row.published} categories={categories} projects={projects} />
+  <Editor client:only="preact" type={type} slug={slug} draft={draft} published={published} categories={categories} projects={projects} />
 </AdminLayout>

@@ -204,7 +204,7 @@
   .ca-card{flex:1;min-width:280px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:32px;}
   .ca-card .l{font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:0.12em;font-size:12px;color:var(--muted);}
   .ca-card p{margin-top:12px;font-size:16px;line-height:1.6;color:var(--body);}
-  .cs-strip{margin:0 24px;min-height:320px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);
+  .cs-strip{flex:1;margin:0 24px;min-height:320px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);
     display:flex;align-items:center;justify-content:center;}
   .cs-strip .hint{font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:0.12em;font-size:12px;color:var(--faint);}
   .cs-outcome{display:flex;gap:48px;align-items:center;flex-wrap:wrap;padding:40px 24px 48px;}
@@ -275,6 +275,9 @@
   /* case-study screens (once real images exist) */
   .cs-screens{margin:0 24px;flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
   .cs-screens img{width:100%;border-radius:var(--r-card);border:1px solid var(--line);background:var(--surface);}
+  .cs-screens figcaption{margin-top:8px;font-size:13px;color:var(--muted);}
+  .cs-images{flex-direction:column;flex-wrap:nowrap;}
+  .cs-images-h{margin:0 24px;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:0.12em;font-size:12px;color:var(--muted);}
 
   /* testimonials (home, before the footer band) */
   .testimonials{margin:48px 24px 0;}

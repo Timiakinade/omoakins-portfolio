@@ -2,7 +2,7 @@
 /* Create a new item from a template, then open it in the editor. */
 export const prerender = false;
 import AdminLayout from "../../../layouts/AdminLayout.astro";
-import { TYPE_LABELS, SECTION_TYPES, publicPath } from "../../../admin/fields";
+import { NEW_PROJECT_BODY, TYPE_LABELS, SECTION_TYPES, publicPath } from "../../../admin/fields";
 import { RESERVED_SLUGS } from "../../../lib/content";
 import { screenFor } from "../../../admin/nav";
 import type { EntryType } from "../../../lib/schema";
@@ -33,8 +33,7 @@ if (Astro.request.method === "POST") {
     const draft = {
       project: {
         name: title, category: categories[0] ?? "", sector: "", year: String(new Date().getFullYear()), order: nextOrder("project"),
-        featured: false, highlight: false, live: false, summary: "", role: "", client: "", timeline: "", deliverables: "", tools: "",
-        overview: "", challenge: "", approach: "", outcome: "", stat: { value: "", caption: "" }, preview: "dashboard", screens: [],
+        featured: false, highlight: false, live: false, summary: "", preview: "dashboard", ...NEW_PROJECT_BODY(),
       },
       post: { title, description: "", date: new Date().toISOString().slice(0, 10), tags: [], body: "" },
       page: { title, description: "", sections: [{ ...SECTION_TYPES.hero.blank(), headline: [title] }, SECTION_TYPES.cta.blank()] },

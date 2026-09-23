@@ -27,10 +27,7 @@ const name = shortName(d.name);
     <span class="k mono">{d.sector} · {d.category}</span>
     <h1 class="bebas">{name}</h1>
     <div class="cs-facts">
-      <div class="f"><div class="l">Role</div><div class="v">{d.role}</div></div>
-      <div class="f"><div class="l">Client</div><div class="v">{d.client}</div></div>
-      <div class="f"><div class="l">Year</div><div class="v">{d.year}</div></div>
-      <div class="f"><div class="l">Timeline</div><div class="v">{d.timeline}</div></div>
+      {d.facts.map((f) => <div class="f"><div class="l">{f.label}</div><div class="v">{f.value}</div></div>)}
     </div>
   </div>
   <div class="cs-hero">
@@ -38,30 +35,43 @@ const name = shortName(d.name);
       ? <img src={d.heroImage} alt={`${name} — hero visual`} />
       : <span class="hint">Hero visual — drop real screen here</span>}
   </div>
-  <div class="cs-overview">
-    <div class="lead"><h2 class="k">Overview</h2><p>{d.overview}</p></div>
-    <div class="cs-side">
-      <div><div class="l">Deliverables</div><div class="v">{d.deliverables}</div></div>
-      <div><div class="l">Tools</div><div class="v">{d.tools}</div></div>
-    </div>
-  </div>
-  <div class="ca-row">
-    <div class="ca-card"><h2 class="l">The challenge</h2><p>{d.challenge}</p></div>
-    <div class="ca-card"><h2 class="l">The approach</h2><p>{d.approach}</p></div>
-  </div>
-  <div class="ca-row">
-    {d.screens.length > 0 ? (
-      <div class="cs-screens">
-        {d.screens.map((s) => <img src={s.src} alt={s.alt} loading="lazy" />)}
+  {d.sections.map((s) =>
+    s.type === "text" ? (
+      <div class="cs-overview">
+        <div class="lead"><h2 class="k">{s.heading}</h2>{s.body.map((para) => <p>{para}</p>)}</div>
+        {s.side.length > 0 && (
+          <div class="cs-side">
+            {s.side.map((x) => <div><div class="l">{x.label}</div><div class="v">{x.value}</div></div>)}
+          </div>
+        )}
+      </div>
+    ) : s.type === "cards" ? (
+      <div class="ca-row">
+        {s.cards.map((c) => <div class="ca-card"><h2 class="l">{c.heading}</h2><p>{c.text}</p></div>)}
+      </div>
+    ) : s.type === "images" ? (
+      <div class:list={["ca-row", { "cs-images": s.heading }]}>
+        {s.heading && <h2 class="cs-images-h">{s.heading}</h2>}
+        {s.images.length > 0 ? (
+          <div class="cs-screens">
+            {s.images.map((img) => (
+              <figure>
+                <img src={img.src} alt={img.alt} loading="lazy" />
+                {img.caption && <figcaption>{img.caption}</figcaption>}
+              </figure>
+            ))}
+          </div>
+        ) : (
+          <div class="cs-strip"><span class="hint">Screen sequence — 2–3 key flows</span></div>
+        )}
       </div>
     ) : (
-      <div class="cs-strip"><span class="hint">Screen sequence — 2–3 key flows</span></div>
-    )}
-  </div>
-  <div class="cs-outcome">
-    <div class="lead"><h2 class="k">Outcome</h2><p>{d.outcome}</p></div>
-    <div class="cs-stat"><div class="big bebas">{d.stat.value}</div><div class="cap">{d.stat.caption}</div></div>
-  </div>
+      <div class="cs-outcome">
+        <div class="lead"><h2 class="k">{s.heading}</h2><p>{s.text}</p></div>
+        <div class="cs-stat"><div class="big bebas">{s.value}</div><div class="cap">{s.caption}</div></div>
+      </div>
+    )
+  )}
   <div class="cs-next">
     <div><div class="l">Next project</div><a class="n bebas" href={`/work/${next.id}`}>{shortName(next.data.name)} →</a></div>
     <a class="cs-back" href="/work">Back to all work</a>

@@ -13,7 +13,7 @@ export type Field =
   | (Base & { kind: "group"; key: string; fields: Field[] }) // nested object
   | (Base & { kind: "fieldset"; fields: Field[] }) // visual grouping only
   | (Base & { kind: "list"; key: string; item: string; fields: Field[]; blank: () => Record<string, unknown> })
-  | (Base & { kind: "sections"; key: string })
+  | (Base & { kind: "sections"; key: string; types: "page" | "case" }) // landing-page or case-study sections
   | (Base & { kind: "projects"; key: string }) // pick projects by name
   | (Base & { kind: "layout"; key: string; names: Record<string, string> }); // fixed blocks: reorder + show/hide
 
@@ -104,6 +104,85 @@ export const SECTION_TYPES = {
     blank: () => ({ type: "cta", headline: "Let's work together →", button: { label: "Start a project", href: "/contact" } }),
   },
 } satisfies Record<string, { label: string; fields: Field[]; blank: () => Record<string, unknown> }>;
+
+const facts = (label: string, blank: () => Record<string, unknown>, help?: string): Field => ({
+  kind: "list", key: "side", item: "detail", label, help,
+  fields: [
+    { kind: "text", key: "label", label: "Label", placeholder: "Tools" },
+    { kind: "text", key: "value", label: "Value", placeholder: "Figma" },
+  ],
+  blank,
+});
+
+/* Case-study sections. Every heading is editable. */
+export const CASE_SECTION_TYPES = {
+  text: {
+    label: "Heading + text",
+    fields: [
+      { kind: "text", key: "heading", label: "Heading", placeholder: "Overview" },
+      { kind: "lines", key: "body", label: "Text", paragraphs: true, help: "Leave an empty line between paragraphs." },
+      facts("Small details on the right (optional)", () => ({ label: "", value: "" }), "e.g. Deliverables and Tools. Leave empty for none."),
+    ],
+    blank: () => ({ type: "text", heading: "", body: [""], side: [] }),
+  },
+  cards: {
+    label: "Cards side by side",
+    fields: [
+      {
+        kind: "list", key: "cards", item: "card", label: "Cards",
+        fields: [
+          { kind: "text", key: "heading", label: "Heading", placeholder: "The challenge" },
+          { kind: "textarea", key: "text", label: "Text" },
+        ],
+        blank: () => ({ heading: "", text: "" }),
+      },
+    ],
+    blank: () => ({ type: "cards", cards: [{ heading: "", text: "" }, { heading: "", text: "" }] }),
+  },
+  images: {
+    label: "Images / screens",
+    fields: [
+      { kind: "text", key: "heading", label: "Heading (optional)", optional: true },
+      {
+        kind: "list", key: "images", item: "image", label: "Images",
+        help: "Until you add one, a “Screen sequence” placeholder shows here.",
+        fields: [
+          { kind: "image", key: "src", label: "Image" },
+          { kind: "text", key: "alt", label: "Describe the image", help: "Read aloud to people who can't see it." },
+          { kind: "text", key: "caption", label: "Caption (optional)", optional: true },
+        ],
+        blank: () => ({ src: "", alt: "" }),
+      },
+    ],
+    blank: () => ({ type: "images", images: [] }),
+  },
+  number: {
+    label: "Text + big number",
+    fields: [
+      { kind: "text", key: "heading", label: "Heading", placeholder: "Outcome" },
+      { kind: "textarea", key: "text", label: "Text" },
+      { kind: "text", key: "value", label: "Big number", placeholder: "3" },
+      { kind: "text", key: "caption", label: "What the number means", placeholder: "Taps to move money" },
+    ],
+    blank: () => ({ type: "number", heading: "", text: "", value: "", caption: "" }),
+  },
+} satisfies Record<string, { label: string; fields: Field[]; blank: () => Record<string, unknown> }>;
+
+/** What a new project starts with: the usual case-study sections, all renamable. */
+export const NEW_PROJECT_BODY = () => ({
+  facts: [
+    { label: "Role", value: "" },
+    { label: "Client", value: "" },
+    { label: "Year", value: String(new Date().getFullYear()) },
+    { label: "Timeline", value: "" },
+  ],
+  sections: [
+    { type: "text", heading: "Overview", body: [""], side: [{ label: "Deliverables", value: "" }, { label: "Tools", value: "" }] },
+    { type: "cards", cards: [{ heading: "The challenge", text: "" }, { heading: "The approach", text: "" }] },
+    { type: "images", images: [] },
+    { type: "number", heading: "Outcome", text: "", value: "", caption: "" },
+  ],
+});
 
 /* Site settings is one item, edited one page at a time from the sidebar.
    `keys` are the parts of Site settings that screen owns (and publishes). */
@@ -278,31 +357,17 @@ export const FIELDS: Record<EntryType, Field[]> = {
     },
     {
       kind: "fieldset", label: "Case study", fields: [
-        { kind: "text", key: "role", label: "Role" },
-        { kind: "text", key: "client", label: "Client" },
-        { kind: "text", key: "timeline", label: "Timeline", placeholder: "6 weeks" },
-        { kind: "text", key: "deliverables", label: "Deliverables" },
-        { kind: "text", key: "tools", label: "Tools" },
-        { kind: "image", key: "heroImage", label: "Big image at the top" },
-        { kind: "textarea", key: "overview", label: "Overview" },
-        { kind: "textarea", key: "challenge", label: "The challenge" },
-        { kind: "textarea", key: "approach", label: "The approach" },
         {
-          kind: "list", key: "screens", item: "screen", label: "Screens",
-          help: "2–3 key screens, shown after the approach.",
+          kind: "list", key: "facts", item: "fact", label: "Facts under the title",
+          help: "e.g. Role, Client, Year, Timeline. Rename, add or remove any.",
           fields: [
-            { kind: "image", key: "src", label: "Image" },
-            { kind: "text", key: "alt", label: "Describe the screen" },
+            { kind: "text", key: "label", label: "Label", placeholder: "Client" },
+            { kind: "text", key: "value", label: "Value", placeholder: "Providus Bank" },
           ],
-          blank: () => ({ src: "", alt: "" }),
+          blank: () => ({ label: "", value: "" }),
         },
-        { kind: "textarea", key: "outcome", label: "Outcome" },
-        {
-          kind: "group", key: "stat", label: "Headline number", fields: [
-            { kind: "text", key: "value", label: "Number", placeholder: "3" },
-            { kind: "text", key: "caption", label: "What it means", placeholder: "Taps to move money" },
-          ],
-        },
+        { kind: "image", key: "heroImage", label: "Big image at the top" },
+        { kind: "sections", key: "sections", label: "Sections", types: "case" },
       ],
     },
     seo,
@@ -322,7 +387,7 @@ export const FIELDS: Record<EntryType, Field[]> = {
   page: [
     { kind: "text", key: "title", label: "Page title" },
     { kind: "textarea", key: "description", label: "Summary", help: "Used in Google and link previews." },
-    { kind: "sections", key: "sections", label: "Sections" },
+    { kind: "sections", key: "sections", label: "Sections", types: "page" },
     seo,
   ],
   testimonial: [

@@ -4,12 +4,30 @@ import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import type { ComponentChildren } from "preact";
 import { supabase } from "../lib/supabase-browser";
 import type { EntryType } from "../lib/schema";
-import { FIELDS, SECTION_TYPES, TYPE_LABELS, publicPath, type Field } from "./fields";
+import { CASE_SECTION_TYPES, FIELDS, SECTION_TYPES, TYPE_LABELS, publicPath, type Field } from "./fields";
 import { screenFor } from "./nav";
 import { pick, status as liveStatus } from "./status";
 
 type Obj = Record<string, any>;
-interface Ctx { categories: string[]; projects: { slug: string; name: string }[] }
+type Path = (string | number)[];
+interface Ctx {
+  categories: string[];
+  projects: { slug: string; name: string }[];
+  // Every edit goes through here and applies to the latest form state, so a slow image
+  // upload finishing later can't undo typing that happened in the meantime.
+  update: (path: Path, value: unknown) => void;
+}
+
+/** Copy of `obj` with the value at `path` replaced (or removed when `value` is undefined). */
+function setIn(obj: any, path: Path, value: unknown): any {
+  if (!path.length) return value;
+  const [k, ...rest] = path;
+  const copy: any = Array.isArray(obj) ? [...obj] : { ...(obj ?? {}) };
+  const child = setIn(obj?.[k], rest, value);
+  if (child === undefined && !Array.isArray(copy)) delete copy[k];
+  else copy[k] = child;
+  return copy;
+}
 
 interface Props {
   type: EntryType;
@@ -132,8 +150,9 @@ function LinesField({ label, help, value, paragraphs, onChange }: { label: strin
   );
 }
 
-function ListField({ f, value, onChange, ctx }: { f: Extract<Field, { kind: "list" }>; value: Obj[]; onChange: (v: Obj[]) => void; ctx: Ctx }) {
+function ListField({ f, value, path, ctx }: { f: Extract<Field, { kind: "list" }>; value: Obj[]; path: Path; ctx: Ctx }) {
   const items = value ?? [];
+  const onChange = (next: Obj[]) => ctx.update(path, next);
   const move = (i: number, d: number) => {
     const next = [...items];
     [next[i], next[i + d]] = [next[i + d], next[i]];
@@ -153,7 +172,7 @@ function ListField({ f, value, onChange, ctx }: { f: Extract<Field, { kind: "lis
               <button type="button" class="a-link danger" onClick={() => onChange(items.filter((_, j) => j !== i))}>Remove</button>
             </span>
           </div>
-          <Fields fields={f.fields} value={item} onChange={(v) => onChange(items.map((x, j) => (j === i ? v : x)))} ctx={ctx} />
+          <Fields fields={f.fields} value={item} path={[...path, i]} ctx={ctx} />
         </div>
       ))}
       <button type="button" class="a-btn" onClick={() => onChange([...items, f.blank()])}>+ Add {f.item}</button>
@@ -161,9 +180,13 @@ function ListField({ f, value, onChange, ctx }: { f: Extract<Field, { kind: "lis
   );
 }
 
-function SectionsField({ value, onChange, ctx }: { value: Obj[]; onChange: (v: Obj[]) => void; ctx: Ctx }) {
+type Registry = Record<string, { label: string; fields: Field[]; blank: () => Obj }>;
+
+function SectionsField({ value, path, ctx, types }: { value: Obj[]; path: Path; ctx: Ctx; types: "page" | "case" }) {
   const items = value ?? [];
-  const [adding, setAdding] = useState<keyof typeof SECTION_TYPES>("text");
+  const onChange = (next: Obj[]) => ctx.update(path, next);
+  const registry: Registry = types === "case" ? CASE_SECTION_TYPES : SECTION_TYPES;
+  const [adding, setAdding] = useState("text");
   const move = (i: number, d: number) => {
     const next = [...items];
     [next[i], next[i + d]] = [next[i + d], next[i]];
@@ -173,26 +196,27 @@ function SectionsField({ value, onChange, ctx }: { value: Obj[]; onChange: (v: O
     <div class="f-row">
       <div class="a-label">Sections, top to bottom</div>
       {items.map((s, i) => {
-        const spec = SECTION_TYPES[s.type as keyof typeof SECTION_TYPES];
+        const spec = registry[s.type];
+        const title = s.heading || s.cards?.map((c: Obj) => c.heading).filter(Boolean).join(" + ") || spec?.label || s.type;
         return (
           <div class="f-item" key={i}>
             <div class="f-item-head">
-              <span class="f-item-n">{i + 1}. {spec?.label ?? s.type}</span>
+              <span class="f-item-n">{i + 1}. {title}</span>
               <span class="f-item-tools">
                 <button type="button" class="a-link" disabled={i === 0} onClick={() => move(i, -1)} aria-label="Move up">↑</button>
                 <button type="button" class="a-link" disabled={i === items.length - 1} onClick={() => move(i, 1)} aria-label="Move down">↓</button>
                 <button type="button" class="a-link danger" onClick={() => confirm("Remove this section?") && onChange(items.filter((_, j) => j !== i))}>Remove</button>
               </span>
             </div>
-            {spec && <Fields fields={spec.fields} value={s} onChange={(v) => onChange(items.map((x, j) => (j === i ? v : x)))} ctx={ctx} />}
+            {spec && <Fields fields={spec.fields} value={s} path={[...path, i]} ctx={ctx} />}
           </div>
         );
       })}
       <div class="f-add">
-        <select class="a-input" value={adding} onChange={(e) => setAdding(e.currentTarget.value as keyof typeof SECTION_TYPES)} aria-label="Section type">
-          {Object.entries(SECTION_TYPES).map(([k, s]) => <option value={k}>{s.label}</option>)}
+        <select class="a-input" value={adding} onChange={(e) => setAdding(e.currentTarget.value)} aria-label="Section type">
+          {Object.entries(registry).map(([k, s]) => <option value={k}>{s.label}</option>)}
         </select>
-        <button type="button" class="a-btn" onClick={() => onChange([...items, SECTION_TYPES[adding].blank()])}>+ Add section</button>
+        <button type="button" class="a-btn" onClick={() => onChange([...items, registry[adding].blank()])}>+ Add section</button>
       </div>
     </div>
   );
@@ -227,23 +251,19 @@ function LayoutField({ f, value, onChange }: { f: Extract<Field, { kind: "layout
   );
 }
 
-function FieldView({ f, value, onChange, ctx }: { f: Field; value: Obj; onChange: (v: Obj) => void; ctx: Ctx }) {
+function FieldView({ f, value, path, ctx }: { f: Field; value: Obj; path: Path; ctx: Ctx }) {
   const id = useId();
   if (f.kind === "fieldset") {
     return (
       <fieldset class="f-set">
         <legend>{f.label}</legend>
-        <Fields fields={f.fields} value={value} onChange={onChange} ctx={ctx} />
+        <Fields fields={f.fields} value={value} path={path} ctx={ctx} />
       </fieldset>
     );
   }
   const v = value[f.key];
-  const set = (x: unknown) => {
-    const next = { ...value };
-    if (x === undefined) delete next[f.key];
-    else next[f.key] = x;
-    onChange(next);
-  };
+  const here = [...path, f.key];
+  const set = (x: unknown) => ctx.update(here, x);
   switch (f.kind) {
     case "text":
     case "url":
@@ -297,13 +317,13 @@ function FieldView({ f, value, onChange, ctx }: { f: Field; value: Obj; onChange
         <fieldset class="f-set">
           <legend>{f.label}</legend>
           {f.help && <p class="f-help">{f.help}</p>}
-          <Fields fields={f.fields} value={v ?? {}} onChange={set} ctx={ctx} />
+          <Fields fields={f.fields} value={v ?? {}} path={here} ctx={ctx} />
         </fieldset>
       );
     case "list":
-      return <ListField f={f} value={v} onChange={set} ctx={ctx} />;
+      return <ListField f={f} value={v} path={here} ctx={ctx} />;
     case "sections":
-      return <SectionsField value={v} onChange={set} ctx={ctx} />;
+      return <SectionsField value={v} path={here} ctx={ctx} types={f.types} />;
     case "layout":
       return <LayoutField f={f} value={v} onChange={set} />;
     case "projects": {
@@ -326,8 +346,8 @@ function FieldView({ f, value, onChange, ctx }: { f: Field; value: Obj; onChange
   }
 }
 
-function Fields({ fields, value, onChange, ctx }: { fields: Field[]; value: Obj; onChange: (v: Obj) => void; ctx: Ctx }) {
-  return <>{fields.map((f, i) => <FieldView key={i} f={f} value={value} onChange={onChange} ctx={ctx} />)}</>;
+function Fields({ fields, value, path, ctx }: { fields: Field[]; value: Obj; path: Path; ctx: Ctx }) {
+  return <>{fields.map((f, i) => <FieldView key={i} f={f} value={value} path={path} ctx={ctx} />)}</>;
 }
 
 /* ---------- the editor ---------- */
@@ -394,7 +414,11 @@ export default function Editor(props: Props) {
     else setStatus({ kind: "error", text: `${done} But the website didn't start updating. Press Publish again in a minute.` });
   }
 
-  const ctx: Ctx = { categories: props.categories, projects: props.projects };
+  const ctx: Ctx = {
+    categories: props.categories,
+    projects: props.projects,
+    update: (path, v) => setValue((prev) => setIn(prev, path, v)),
+  };
   const livePath = type === "settings" ? LIVE_PATHS[props.previewPage ?? "home"] ?? "/" : publicPath(type, slug);
 
   return (
@@ -418,7 +442,7 @@ export default function Editor(props: Props) {
       )}
 
       <form class="e-form" onSubmit={(e) => { e.preventDefault(); save(); }}>
-        <Fields fields={props.fields ?? FIELDS[type]} value={value} onChange={setValue} ctx={ctx} />
+        <Fields fields={props.fields ?? FIELDS[type]} value={value} path={[]} ctx={ctx} />
       </form>
 
       <div class="e-foot">
