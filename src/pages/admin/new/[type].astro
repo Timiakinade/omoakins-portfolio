@@ -1,0 +1,74 @@
+---
+/* Create a new item from a template, then open it in the editor. */
+export const prerender = false;
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { TYPE_LABELS, SECTION_TYPES, publicPath } from "../../../admin/fields";
+import { RESERVED_SLUGS } from "../../../lib/content";
+import type { EntryType } from "../../../lib/schema";
+
+const type = Astro.params.type as EntryType;
+if (!["project", "post", "page", "testimonial"].includes(type)) return Astro.redirect("/admin");
+const db = Astro.locals.supabase;
+const label = TYPE_LABELS[type].one;
+
+const slugify = (s: string) =>
+  s.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
+
+let problem = "";
+let title = "";
+let slug = "";
+if (Astro.request.method === "POST") {
+  const form = await Astro.request.formData();
+  title = String(form.get("title") ?? "").trim();
+  slug = slugify(String(form.get("slug") ?? "") || title) || (type === "testimonial" ? `testimonial-${Date.now().toString(36)}` : "");
+  if (!title) problem = type === "testimonial" ? "Add the person's name." : "Add a title.";
+  else if (!slug) problem = "Add a web address using letters or numbers.";
+  else if (type === "page" && RESERVED_SLUGS.includes(slug)) problem = `"/${slug}" is already used by the site. Pick another address.`;
+  else {
+    const { data: rows } = await db.from("entries").select("type, draft");
+    const nextOrder = (t: string) => Math.max(0, ...(rows ?? []).filter((r) => r.type === t).map((r) => Number(r.draft.order) || 0)) + 1;
+    const categories: string[] = (rows ?? []).find((r) => r.type === "settings")?.draft.categories ?? [];
+    const draft = {
+      project: {
+        name: title, category: categories[0] ?? "", sector: "", year: String(new Date().getFullYear()), order: nextOrder("project"),
+        featured: false, highlight: false, live: false, summary: "", role: "", client: "", timeline: "", deliverables: "", tools: "",
+        overview: "", challenge: "", approach: "", outcome: "", stat: { value: "", caption: "" }, preview: "dashboard", screens: [],
+      },
+      post: { title, description: "", date: new Date().toISOString().slice(0, 10), tags: [], body: "" },
+      page: { title, description: "", sections: [{ ...SECTION_TYPES.hero.blank(), headline: [title] }, SECTION_TYPES.cta.blank()] },
+      testimonial: { quote: "", name: title, role: "", order: nextOrder("testimonial") },
+    }[type as "project" | "post" | "page" | "testimonial"];
+    const { error } = await db.from("entries").insert({ type, slug, draft });
+    if (!error) return Astro.redirect(`/admin/edit/${type}/${slug}`);
+    problem = error.code === "23505" ? `There's already a ${label.toLowerCase()} at that address. Pick another.` : error.message;
+  }
+}
+const prefix = type === "testimonial" ? "" : publicPath(type, "").replace(/\/$/, "") + "/";
+---
+<AdminLayout title={`New ${label.toLowerCase()}`} email={Astro.locals.email}>
+  <a class="a-back" href="/admin">← Overview</a>
+  <h1 class="a-title">New {label.toLowerCase()}</h1>
+  <form method="post" class="a-card a-new">
+    <label class="a-label" for="title">{type === "testimonial" ? "Person's name" : "Title"}</label>
+    <input class="a-input" id="title" name="title" value={title} required autofocus>
+    {type !== "testimonial" && (
+      <>
+        <label class="a-label" for="slug">Web address</label>
+        <div class="a-slug"><span class="a-muted">{prefix}</span><input class="a-input" id="slug" name="slug" value={slug} placeholder="made-from-the-title" pattern="[a-z0-9-]*"></div>
+        <p class="f-help">Leave empty to make one from the title. Lowercase letters, numbers and dashes. It can't be changed later.</p>
+      </>
+    )}
+    {problem && <p class="e-status error">{problem}</p>}
+    <button class="a-btn primary" type="submit">Create draft</button>
+  </form>
+</AdminLayout>
+<script>
+  // Suggest the address from the title as it's typed, until the address is edited by hand.
+  const title = document.getElementById("title") as HTMLInputElement;
+  const slug = document.getElementById("slug") as HTMLInputElement | null;
+  let touched = !!slug?.value;
+  slug?.addEventListener("input", () => (touched = true));
+  title.addEventListener("input", () => {
+    if (slug && !touched) slug.value = title.value.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
+  });
+</script>

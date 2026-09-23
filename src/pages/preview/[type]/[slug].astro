@@ -1,0 +1,48 @@
+---
+/* Shows a draft in the real page design. Admin-only (see middleware.ts). */
+export const prerender = false;
+import HomeView from "../../../views/HomeView.astro";
+import WorkView from "../../../views/WorkView.astro";
+import CaseStudyView from "../../../views/CaseStudyView.astro";
+import AboutView from "../../../views/AboutView.astro";
+import ContactView from "../../../views/ContactView.astro";
+import BlogView from "../../../views/BlogView.astro";
+import PostView from "../../../views/PostView.astro";
+import LandingView from "../../../views/LandingView.astro";
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { loadPreview } from "../../../lib/preview";
+import { ENTRY_TYPES, type EntryType } from "../../../lib/schema";
+
+const { type, slug } = Astro.params as { type: EntryType; slug: string };
+if (!ENTRY_TYPES.includes(type)) return Astro.redirect("/admin");
+
+const c = await loadPreview(Astro.locals.supabase, type, slug);
+const { site, projects, posts, pages, testimonials } = c;
+const hasPosts = posts.length > 0;
+const view = Astro.url.searchParams.get("page") ?? "home"; // which page to show for Site settings
+const project = projects.findIndex((p) => p.id === slug);
+---
+{c.problems.length > 0 || !site ? (
+  <AdminLayout title="Can't preview yet">
+    <h1 class="a-title">This draft can't be previewed yet</h1>
+    <p class="a-muted">Fix these in the editor, save, and try again:</p>
+    <ul class="a-problems">{c.problems.map((p) => <li>{p}</li>)}</ul>
+    <a class="a-btn" href={`/admin/edit/${type}/${slug}`}>Back to the editor</a>
+  </AdminLayout>
+) : type === "project" ? (
+  <CaseStudyView site={site} hasPosts={hasPosts} preview project={projects[project]} next={projects[(project + 1) % projects.length]} />
+) : type === "post" ? (
+  <PostView site={site} preview post={posts.find((p) => p.id === slug)!} />
+) : type === "page" ? (
+  <LandingView site={site} hasPosts={hasPosts} preview page={pages.find((p) => p.id === slug)!} projects={projects} />
+) : type === "settings" && view === "work" ? (
+  <WorkView site={site} hasPosts={hasPosts} preview projects={projects} />
+) : type === "settings" && view === "about" ? (
+  <AboutView site={site} hasPosts={hasPosts} preview />
+) : type === "settings" && view === "contact" ? (
+  <ContactView site={site} hasPosts={hasPosts} preview />
+) : type === "settings" && view === "blog" ? (
+  <BlogView site={site} preview posts={posts} />
+) : (
+  <HomeView site={site} hasPosts={hasPosts} preview projects={projects} testimonials={testimonials} />
+)}

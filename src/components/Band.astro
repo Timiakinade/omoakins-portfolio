@@ -1,5 +1,7 @@
 ---
-import { site } from "../lib/content";
+import type { Site } from "../lib/schema";
+interface Props { site: Site }
+const { site } = Astro.props;
 ---
 <div class="band reveal">
   <span class="q">{site.home.bandQuestion}</span>

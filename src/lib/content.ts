@@ -1,42 +1,36 @@
-import { getCollection, type CollectionEntry } from "astro:content";
-import siteJson from "../content/site.json";
+/* Published content for the static site build. Preview pages build the same shapes
+   from drafts instead (see lib/preview.ts). */
+import { getCollection, getEntry } from "astro:content";
+import { marked } from "marked";
+import type { Page, Post, Project, Site, Testimonial } from "./schema";
 
-export const site = siteJson;
+export type { Page, Post, Project, Site, Testimonial } from "./schema";
 
-// Drafts show while working locally and on Vercel preview links, never on the live site.
-export const SHOW_DRAFTS = import.meta.env.DEV || process.env.VERCEL_ENV === "preview";
-const visible = (e: { data: { draft: boolean } }) => SHOW_DRAFTS || !e.data.draft;
+const byOrder = <T extends { data: { order: number } }>(a: T, b: T) => a.data.order - b.data.order;
+const byDate = (a: Post, b: Post) => b.data.date.valueOf() - a.data.date.valueOf();
+const plain = <T>({ id, data }: { id: string; data: T }) => ({ id, data });
 
-export type Project = CollectionEntry<"projects">;
-export type Post = CollectionEntry<"posts">;
-export type Page = CollectionEntry<"pages">;
-
-export async function getProjects() {
-  return (await getCollection("projects", visible)).sort((a, b) => a.data.order - b.data.order);
+export async function getSite(): Promise<Site> {
+  const entry = await getEntry("settings", "site");
+  if (!entry) throw new Error('Site settings are missing: publish "Site settings" in the dashboard.');
+  return entry.data;
 }
 
-export async function getPosts() {
-  return (await getCollection("posts", visible)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-}
+export const getProjects = async (): Promise<Project[]> => (await getCollection("projects")).map(plain).sort(byOrder);
+export const getPosts = async (): Promise<Post[]> => (await getCollection("posts")).map(plain).sort(byDate);
+export const getTestimonials = async (): Promise<Testimonial[]> => (await getCollection("testimonials")).map(plain).sort(byOrder);
+export const getPages = async (): Promise<Page[]> => (await getCollection("pages")).map(plain);
 
-export async function getTestimonials() {
-  return (await getCollection("testimonials", visible)).sort((a, b) => a.data.order - b.data.order);
-}
+export { byOrder, byDate };
 
 // Landing pages live at the site root (/services), so they can't take a built-in page's address.
-const RESERVED = new Set(["work", "blog", "about", "contact", "og", "404", "sitemap-index", "sitemap-0"]);
-
-export async function getPages() {
-  const pages = await getCollection("pages", visible);
-  for (const p of pages) {
-    if (RESERVED.has(p.id)) throw new Error(`Landing page "${p.id}" uses a reserved address; rename its file.`);
-  }
-  return pages;
-}
+export const RESERVED_SLUGS = ["work", "blog", "about", "contact", "og", "admin", "preview", "api", "404", "sitemap-index", "sitemap-0", "robots"];
 
 export function formatDate(d: Date) {
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
+
+export const markdown = (md: string) => marked.parse(md, { async: false }) as string;
 
 // First part of a name like "Providus Bank — Redesign".
 export const shortName = (name: string) => name.split(" — ")[0];

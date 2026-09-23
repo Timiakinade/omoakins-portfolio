@@ -1,0 +1,37 @@
+---
+import Base from "../layouts/Base.astro";
+import type { Site } from "../lib/schema";
+
+interface Props { site: Site; hasPosts: boolean; preview?: boolean }
+const { site, hasPosts, preview } = Astro.props;
+const c = site.contact;
+---
+<Base site={site} hasPosts={hasPosts} preview={preview} title={`Contact · ${site.name}`} description={c.pitch} og="contact" nav="contact">
+  <div class="contact">
+    <div class="left">
+      <div class="avail"><span class="pulse"></span><span class="mono">{c.availability}</span></div>
+      <h1 class="bebas">{c.headline.map((line, i) => <>{i > 0 && <br />}{line}</>)}</h1>
+      <p class="pitch">{c.pitch}</p>
+      <div class="details">
+        <div><div class="l">Email</div><div class="v"><a href={`mailto:${site.email}`}>{site.email}</a></div></div>
+        <div><div class="l">Prefer to talk?</div><div class="v"><a href={site.callLink}>{c.callLabel}</a></div></div>
+        <div class="socials">{site.socials.map((s) => <a href={s.href} target="_blank" rel="noopener">{s.label}</a>)}</div>
+      </div>
+    </div>
+    <form class="form" id="contactForm" novalidate>
+      <div class="field"><label for="cName">Name</label><input id="cName" name="name" type="text" autocomplete="name"></div>
+      <div class="field"><label for="cEmail">Email</label><input id="cEmail" name="email" type="email" autocomplete="email"></div>
+      <div class="field">
+        <span class="label" id="projTypesLabel">Project type</span>
+        <div class="types" id="projTypes" role="group" aria-labelledby="projTypesLabel">
+          {c.projectTypes.map((t, i) => (
+            <button type="button" class:list={["chip", { active: i === 0 }]} data-type={t} aria-pressed={i === 0 ? "true" : "false"}>{t}</button>
+          ))}
+        </div>
+      </div>
+      <div class="field"><label for="cMsg">Message</label><textarea id="cMsg" name="message"></textarea></div>
+      <button class="submit" type="submit">Send it →</button>
+      <div class="note" id="formNote" role="status"></div>
+    </form>
+  </div>
+</Base>

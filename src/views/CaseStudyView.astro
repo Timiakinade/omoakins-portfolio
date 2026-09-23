@@ -1,0 +1,69 @@
+---
+import Base from "../layouts/Base.astro";
+import { shortName } from "../lib/content";
+import type { Project, Site } from "../lib/schema";
+
+interface Props { site: Site; hasPosts: boolean; preview?: boolean; project: Project; next: Project }
+const { site, hasPosts, preview, project, next } = Astro.props;
+const d = project.data;
+const name = shortName(d.name);
+---
+<Base
+  site={site}
+  hasPosts={hasPosts}
+  preview={preview}
+  title={d.seo?.title || `${name} — Case Study · ${site.name}`}
+  description={d.seo?.description || d.summary}
+  og={`work/${project.id}`}
+  ogImage={d.seo?.image}
+  nav="work"
+  type="article"
+>
+  <div class="cs-nav">
+    <a class="cs-back" href="/work">← Work / {name}</a>
+    <a class="btn" href="/contact">Book a call</a>
+  </div>
+  <div class="cs-title">
+    <span class="k mono">{d.sector} · {d.category}</span>
+    <h1 class="bebas">{name}</h1>
+    <div class="cs-facts">
+      <div class="f"><div class="l">Role</div><div class="v">{d.role}</div></div>
+      <div class="f"><div class="l">Client</div><div class="v">{d.client}</div></div>
+      <div class="f"><div class="l">Year</div><div class="v">{d.year}</div></div>
+      <div class="f"><div class="l">Timeline</div><div class="v">{d.timeline}</div></div>
+    </div>
+  </div>
+  <div class="cs-hero">
+    {d.heroImage
+      ? <img src={d.heroImage} alt={`${name} — hero visual`} />
+      : <span class="hint">Hero visual — drop real screen here</span>}
+  </div>
+  <div class="cs-overview">
+    <div class="lead"><h2 class="k">Overview</h2><p>{d.overview}</p></div>
+    <div class="cs-side">
+      <div><div class="l">Deliverables</div><div class="v">{d.deliverables}</div></div>
+      <div><div class="l">Tools</div><div class="v">{d.tools}</div></div>
+    </div>
+  </div>
+  <div class="ca-row">
+    <div class="ca-card"><h2 class="l">The challenge</h2><p>{d.challenge}</p></div>
+    <div class="ca-card"><h2 class="l">The approach</h2><p>{d.approach}</p></div>
+  </div>
+  <div class="ca-row">
+    {d.screens.length > 0 ? (
+      <div class="cs-screens">
+        {d.screens.map((s) => <img src={s.src} alt={s.alt} loading="lazy" />)}
+      </div>
+    ) : (
+      <div class="cs-strip"><span class="hint">Screen sequence — 2–3 key flows</span></div>
+    )}
+  </div>
+  <div class="cs-outcome">
+    <div class="lead"><h2 class="k">Outcome</h2><p>{d.outcome}</p></div>
+    <div class="cs-stat"><div class="big bebas">{d.stat.value}</div><div class="cap">{d.stat.caption}</div></div>
+  </div>
+  <div class="cs-next">
+    <div><div class="l">Next project</div><a class="n bebas" href={`/work/${next.id}`}>{shortName(next.data.name)} →</a></div>
+    <a class="cs-back" href="/work">Back to all work</a>
+  </div>
+</Base>

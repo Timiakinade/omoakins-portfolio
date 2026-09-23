@@ -1,35 +1,6 @@
 ---
-import Base from "../../layouts/Base.astro";
-import { getPosts, formatDate, site } from "../../lib/content";
-const posts = await getPosts();
+import BlogView from "../../views/BlogView.astro";
+import { getPosts, getSite } from "../../lib/content";
+const [site, posts] = await Promise.all([getSite(), getPosts()]);
 ---
-<Base title={`Blog · ${site.name}`} description={site.blog.intro} og="blog" nav="blog">
-  <div class="phead">
-    <div>
-      <h1 class="bebas">{site.blog.heading}</h1>
-      <p class="phead-intro">{site.blog.intro}</p>
-    </div>
-  </div>
-  {posts.length === 0 ? (
-    <div class="empty">First posts coming soon.</div>
-  ) : (
-    <div class="grid3 reveal">
-      {posts.map((p) => (
-        <a class="tile post-tile" href={`/blog/${p.id}`}>
-          <div class="tile-head">
-            <div class="tile-tags">{p.data.tags.slice(0, 2).map((t) => <span class="pill">{t}</span>)}</div>
-            <time class="year" datetime={p.data.date.toISOString()}>{formatDate(p.data.date)}</time>
-          </div>
-          <div class="prev">
-            {p.data.cover ? <img class="cover" src={p.data.cover} alt="" loading="lazy" /> : <span class="wm">{site.name}</span>}
-          </div>
-          <div>
-            <div class="pname">{p.data.title}</div>
-            <div class="pdesc">{p.data.description}</div>
-          </div>
-          {p.data.draft && <span class="draft-flag">Draft</span>}
-        </a>
-      ))}
-    </div>
-  )}
-</Base>
+<BlogView site={site} posts={posts} />

@@ -1,0 +1,74 @@
+---
+export const prerender = false;
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+<AdminLayout title="Log in">
+  <section class="a-login">
+    <h1 class="bebas">Dashboard</h1>
+    <form id="emailForm" class="a-card">
+      <label class="a-label" for="email">Your email</label>
+      <input class="a-input" id="email" type="email" autocomplete="email" required>
+      <button class="a-btn primary" type="submit">Email me a code</button>
+    </form>
+    <form id="codeForm" class="a-card" hidden>
+      <p class="a-muted">We sent a 6-digit code to <strong id="sentTo"></strong>. It can take a minute to arrive.</p>
+      <label class="a-label" for="code">Code</label>
+      <input class="a-input a-code" id="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="10" required>
+      <button class="a-btn primary" type="submit">Log in</button>
+      <button class="a-link" type="button" id="restart">Use a different email</button>
+    </form>
+    <p class="a-note" id="note" role="status"></p>
+  </section>
+</AdminLayout>
+
+<script>
+  import { supabase } from "../../lib/supabase-browser";
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const emailForm = $<HTMLFormElement>("emailForm");
+  const codeForm = $<HTMLFormElement>("codeForm");
+  const note = $("note");
+  let email = "";
+
+  const go = () => {
+    const next = new URLSearchParams(location.search).get("next");
+    location.href = next && next.startsWith("/") && !next.startsWith("//") ? next : "/admin";
+  };
+  supabase.auth.getUser().then(({ data }) => data.user && go());
+
+  emailForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    email = $<HTMLInputElement>("email").value.trim().toLowerCase();
+    note.textContent = "Sending…";
+    const { error } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+    if (error) {
+      note.textContent = /signups not allowed|not found|otp_disabled/i.test(error.message)
+        ? "That email doesn't have access to this dashboard."
+        : `Couldn't send the code: ${error.message}`;
+      return;
+    }
+    note.textContent = "";
+    $("sentTo").textContent = email;
+    emailForm.hidden = true;
+    codeForm.hidden = false;
+    $<HTMLInputElement>("code").focus();
+  });
+
+  codeForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    note.textContent = "Checking…";
+    const token = $<HTMLInputElement>("code").value.replace(/\s/g, "");
+    const { error } = await supabase.auth.verifyOtp({ email, token, type: "email" });
+    if (error) {
+      note.textContent = "That code didn't work. Check it, or ask for a new one.";
+      return;
+    }
+    go();
+  });
+
+  $("restart").addEventListener("click", () => {
+    codeForm.hidden = true;
+    emailForm.hidden = false;
+    note.textContent = "";
+  });
+</script>

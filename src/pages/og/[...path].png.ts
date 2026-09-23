@@ -1,9 +1,10 @@
 import type { APIRoute } from "astro";
 import { renderOg, type OgCard } from "../../lib/og";
-import { getPages, getPosts, getProjects, shortName, site } from "../../lib/content";
+import { getPages, getPosts, getProjects, getSite, shortName } from "../../lib/content";
 
 // One image per page; the key matches the `og` prop each page passes to Base.astro.
 export async function getStaticPaths() {
+  const site = await getSite();
   const cards: Record<string, OgCard> = {
     home: { eyebrow: "Brand & product design", title: site.tagline, description: site.home.intro },
     work: { eyebrow: "Selected work", title: site.work.heading, description: `Brand and product design across ${site.about.whereIWork.join(", ").toLowerCase()}.`, action: "View work" },

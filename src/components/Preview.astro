@@ -1,6 +1,6 @@
 ---
 /* Tile preview: the real cover image when there is one, otherwise the abstract mockup. */
-import type { Project } from "../lib/content";
+import type { Project } from "../lib/schema";
 interface Props { project: Project }
 const { project: p } = Astro.props;
 const { cover, preview, wordmark, name } = p.data;

@@ -1,10 +1,11 @@
 ---
-import { getTestimonials, site } from "../lib/content";
-const items = await getTestimonials();
+import type { Testimonial } from "../lib/schema";
+interface Props { items: Testimonial[]; label: string }
+const { items, label } = Astro.props;
 ---
 {items.length > 0 && (
   <section class="testimonials reveal" aria-labelledby="testimonials-label">
-    <div class="l" id="testimonials-label">{site.home.testimonialsLabel}</div>
+    <div class="l" id="testimonials-label">{label}</div>
     <div class="t-grid">
       {items.map(({ data: t }) => (
         <figure class="t-card">
@@ -14,7 +15,6 @@ const items = await getTestimonials();
             <span class="t-name">{t.name}</span>
             <span class="t-role">{t.role}</span>
           </figcaption>
-          {t.draft && <span class="draft-flag">Draft</span>}
         </figure>
       ))}
     </div>

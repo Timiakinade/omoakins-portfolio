@@ -1,44 +1,6 @@
 ---
-import Base from "../layouts/Base.astro";
-import { site } from "../lib/content";
-const a = site.about;
+import AboutView from "../views/AboutView.astro";
+import { getPosts, getSite } from "../lib/content";
+const [site, posts] = await Promise.all([getSite(), getPosts()]);
 ---
-<Base title={`About · ${site.name}`} description={a.lead} og="about" nav="about">
-  <div class="about-statement">
-    <span class="k mono">{a.kicker}</span>
-    <h1 class="bebas">{a.headline.map((line, i) => <>{i > 0 && <br />}{line}</>)}</h1>
-  </div>
-  <div class="about-body">
-    <div class="portrait">
-      {a.portrait
-        ? <img src={a.portrait} alt={`Portrait of ${site.person}`} />
-        : <span class="hint">Portrait</span>}
-    </div>
-    <div class="about-text">
-      <p class="big">{a.lead}</p>
-      <p class="small">{a.body}</p>
-      <div class="about-cols">
-        <div>
-          <div class="l">What I do</div>
-          <div class="v">{a.whatIDo.map((x, i) => <>{i > 0 && <br />}{x}</>)}</div>
-        </div>
-        <div>
-          <div class="l">Where I work</div>
-          <div class="v">{a.whereIWork.map((x, i) => <>{i > 0 && <br />}{x}</>)}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="clients">
-    <div class="l">Worked across</div>
-    <div class="logos">{a.workedAcross.map((x) => <span class="bebas">{x}</span>)}</div>
-  </div>
-  <div class="quote">
-    <p>{a.quote}</p>
-    <div class="src">{a.quoteSource}</div>
-  </div>
-  <div class="cta">
-    <div class="big bebas">{a.ctaHeadline}</div>
-    <a class="btn light" href="/contact">{a.ctaButton}</a>
-  </div>
-</Base>
+<AboutView site={site} hasPosts={posts.length > 0} />

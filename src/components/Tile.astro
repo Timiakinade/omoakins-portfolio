@@ -2,7 +2,7 @@
 /* A project tile. It carries the "featured" markup (summary, category pill) too;
    CSS shows it only when the tile has the .featured class. */
 import Preview from "./Preview.astro";
-import type { Project } from "../lib/content";
+import type { Project } from "../lib/schema";
 interface Props { project: Project; featured?: boolean; hidden?: boolean }
 const { project: p, featured = false, hidden = false } = Astro.props;
 const d = p.data;
@@ -32,5 +32,4 @@ const d = p.data;
     <div class="pname">{d.name}</div>
     <div class="pdesc only-featured">{d.summary}</div>
   </div>
-  {d.draft && <span class="draft-flag">Draft</span>}
 </a>

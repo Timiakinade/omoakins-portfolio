@@ -1,8 +1,11 @@
 ---
 import "../styles/global.css";
-import { site, getPosts } from "../lib/content";
+import type { Site } from "../lib/schema";
 
 interface Props {
+  site: Site;
+  hasPosts: boolean; // show the Blog link only once there's something to read
+  preview?: boolean; // dashboard preview: banner + keep out of search engines
   title?: string; // full <title>; defaults to the site title
   description?: string;
   og: string; // generated share image key, e.g. "work/providus" -> /og/work/providus.png
@@ -10,11 +13,12 @@ interface Props {
   nav?: "home" | "work" | "blog" | "about" | "contact";
   type?: "website" | "article";
 }
-const { title = site.title, description = site.description, og, ogImage, nav, type = "website" } = Astro.props;
+const { site, hasPosts, preview = false, og, ogImage, nav, type = "website" } = Astro.props;
+const title = Astro.props.title ?? site.title;
+const description = Astro.props.description ?? site.description;
 
 const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || "/", Astro.site);
 const image = new URL(ogImage || `/og/${og}.png`, Astro.site);
-const hasPosts = (await getPosts()).length > 0;
 
 const links = [
   { key: "home", href: "/", label: "Home" },
@@ -44,6 +48,7 @@ const links = [
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0D0D0F">
+{preview && <meta name="robots" content="noindex, nofollow">}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Mono:wght@400;700&display=swap">
@@ -72,6 +77,7 @@ const links = [
     </nav>
     <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
   </header>
+  {preview && <p class="preview-banner">Preview — this is your draft. Nothing here is live until you press Publish.</p>}
   <main>
     <slot />
   </main>

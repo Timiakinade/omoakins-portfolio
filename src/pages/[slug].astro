@@ -1,88 +1,15 @@
 ---
-/* Landing pages built from sections (see the "pages" collection in content.config.ts). */
-import Base from "../layouts/Base.astro";
-import Tile from "../components/Tile.astro";
-import { getPages, getProjects, site, type Page } from "../lib/content";
+import LandingView from "../views/LandingView.astro";
+import { RESERVED_SLUGS, getPages, getPosts, getProjects, getSite, type Page } from "../lib/content";
 
 export async function getStaticPaths() {
-  return (await getPages()).map((page) => ({ params: { slug: page.id }, props: { page } }));
+  // A landing page can't take a built-in page's address; the dashboard prevents this too.
+  return (await getPages())
+    .filter((page) => !RESERVED_SLUGS.includes(page.id))
+    .map((page) => ({ params: { slug: page.id }, props: { page } }));
 }
 
 const { page } = Astro.props as { page: Page };
-const d = page.data;
-const projects = await getProjects();
+const [site, projects, posts] = await Promise.all([getSite(), getProjects(), getPosts()]);
 ---
-<Base
-  title={d.seo?.title || `${d.title} · ${site.name}`}
-  description={d.seo?.description || d.description}
-  og={page.id}
-  ogImage={d.seo?.image}
->
-  {d.draft && <p class="draft-banner">Draft — only visible on local and preview builds.</p>}
-  {d.sections.map((s) => {
-    switch (s.type) {
-      case "hero":
-        return (
-          <div class="hero lp-hero">
-            <div>
-              {s.eyebrow && <div class="avail"><span class="mono">{s.eyebrow}</span></div>}
-              <h1 class="bebas">{s.headline.map((line, i) => <>{i > 0 && <br />}{line}</>)}</h1>
-              {s.intro && <p>{s.intro}</p>}
-              {s.button && <a class="btn lp-btn" href={s.button.href}>{s.button.label}</a>}
-            </div>
-          </div>
-        );
-      case "text":
-        return (
-          <div class="cs-overview lp-text reveal">
-            <div class="lead">
-              {s.label && <h2 class="k">{s.label}</h2>}
-              {s.body.map((para) => <p>{para}</p>)}
-            </div>
-          </div>
-        );
-      case "image":
-        return (
-          <figure class="lp-image reveal">
-            <div class="cs-hero">
-              {s.src ? <img src={s.src} alt={s.alt} loading="lazy" /> : <span class="hint">Image — drop a real screen here</span>}
-            </div>
-            {s.caption && <figcaption>{s.caption}</figcaption>}
-          </figure>
-        );
-      case "stats":
-        return (
-          <div class="lp-stats reveal">
-            {s.items.map((it) => (
-              <div class="lp-stat"><div class="num bebas">{it.value}</div><div class="lbl">{it.label}</div></div>
-            ))}
-          </div>
-        );
-      case "quote":
-        return (
-          <div class="quote reveal">
-            <p>{s.text}</p>
-            {s.source && <div class="src">{s.source}</div>}
-          </div>
-        );
-      case "projects": {
-        const picked = s.projects.length
-          ? s.projects.map((id) => projects.find((p) => p.id === id)).filter((p) => p !== undefined)
-          : projects;
-        return (
-          <section class="lp-projects reveal">
-            {s.label && <h2 class="l">{s.label}</h2>}
-            <div class="grid3">{picked.map((p) => <Tile project={p} />)}</div>
-          </section>
-        );
-      }
-      case "cta":
-        return (
-          <div class="cta lp-cta reveal">
-            <div class="big bebas">{s.headline}</div>
-            <a class="btn light" href={s.button.href}>{s.button.label}</a>
-          </div>
-        );
-    }
-  })}
-</Base>
+<LandingView site={site} hasPosts={posts.length > 0} page={page} projects={projects} />
