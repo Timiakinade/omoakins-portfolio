@@ -17,6 +17,12 @@ const { title, email, active } = Astro.props;
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Mono:wght@400;700&display=swap">
+{email && (
+  /* Chrome/Edge: start loading a dashboard page as soon as the pointer rests on its link. */
+  <script type="speculationrules" is:inline set:html={JSON.stringify({
+    prerender: [{ where: { and: [{ href_matches: "/admin/*" }, { not: { href_matches: "/admin/login" } }] }, eagerness: "moderate" }],
+  })} />
+)}
 </head>
 <body class="admin">
 {email ? (
@@ -56,6 +62,18 @@ const { title, email, active } = Astro.props;
     await supabase.auth.signOut();
     location.href = "/admin/login";
   });
+  // Instant feedback: the moment a dashboard link is clicked, highlight it and show a loading bar.
+  document.addEventListener("click", (e) => {
+    const a = (e.target as HTMLElement).closest<HTMLAnchorElement>("a[href^='/admin']");
+    if (!a || a.target || e.metaKey || e.ctrlKey || e.shiftKey || e.defaultPrevented) return;
+    document.body.classList.add("loading");
+    if (a.closest(".a-side-nav")) {
+      document.querySelectorAll(".a-side-nav a.active").forEach((x) => x.classList.remove("active"));
+      a.classList.add("active");
+    }
+  });
+  addEventListener("pageshow", () => document.body.classList.remove("loading"));
+
   const toggle = document.getElementById("sideToggle");
   toggle?.addEventListener("click", () => {
     const open = document.getElementById("side")!.classList.toggle("open");

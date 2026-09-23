@@ -143,3 +143,11 @@ select.a-input{appearance:auto;}
   border:1px solid var(--line-2);border-radius:var(--r-inner);background:var(--inset);}
 .f-layout .f-check{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--ink);cursor:pointer;}
 .f-layout .f-check input{width:18px;height:18px;accent-color:var(--green);}
+
+/* loading feedback after a click (AdminLayout.astro) */
+.admin.loading::before{content:"";position:fixed;top:0;left:0;height:3px;width:100%;z-index:100;
+  background:linear-gradient(90deg,transparent,var(--mint),transparent);background-size:40% 100%;background-repeat:no-repeat;
+  animation:a-load 1s ease-in-out infinite;}
+.admin.loading .a-main{opacity:.55;transition:opacity .15s ease .1s;}
+@keyframes a-load{from{background-position:-40% 0;}to{background-position:140% 0;}}
+@media (prefers-reduced-motion:reduce){.admin.loading::before{animation:none;background:var(--mint);}}
