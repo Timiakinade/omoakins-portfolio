@@ -15,7 +15,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   if (!user || !isAdmin) {
     if (pathname.startsWith("/api/")) return Response.json({ error: "Please log in again." }, { status: 401 });
-    return context.redirect(`/admin/login?next=${encodeURIComponent(pathname + context.url.search)}`);
+    const denied = user ? "&denied=1" : ""; // logged in, but not an admin
+    return context.redirect(`/admin/login?next=${encodeURIComponent(pathname + context.url.search)}${denied}`);
   }
   context.locals.supabase = supabase;
   context.locals.email = user.email ?? "";

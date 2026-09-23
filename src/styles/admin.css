@@ -114,3 +114,7 @@ select.a-input{appearance:auto;}
   .e-actions{width:100%;}
   .e-actions .a-btn{flex:1;}
 }
+.f-layout{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;margin-bottom:8px;
+  border:1px solid var(--line-2);border-radius:var(--r-inner);background:var(--inset);}
+.f-layout .f-check{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--ink);cursor:pointer;}
+.f-layout .f-check input{width:18px;height:18px;accent-color:var(--green);}

@@ -3,7 +3,7 @@ export const prerender = false;
 import AdminLayout from "../../../../layouts/AdminLayout.astro";
 import Editor from "../../../../admin/Editor";
 import { TYPE_LABELS, itemTitle } from "../../../../admin/fields";
-import { ENTRY_TYPES, type EntryType } from "../../../../lib/schema";
+import { ENTRY_TYPES, siteSchema, type EntryType } from "../../../../lib/schema";
 
 const { type, slug } = Astro.params as { type: EntryType; slug: string };
 if (!ENTRY_TYPES.includes(type)) return Astro.redirect("/admin");
@@ -15,6 +15,12 @@ const [{ data: row }, { data: others }] = await Promise.all([
 ]);
 if (!row) return Astro.redirect("/admin");
 
+// Settings saved before a newer option existed (menu, Home order) get that option's default.
+const parsedSettings = type === "settings" ? siteSchema.safeParse(row.draft) : null;
+const draft = parsedSettings?.success ? parsedSettings.data : row.draft;
+const parsedLive = type === "settings" && row.published ? siteSchema.safeParse(row.published) : null;
+const published = parsedLive?.success ? parsedLive.data : row.published;
+
 const categories: string[] = others?.find((r) => r.type === "settings")?.draft.categories ?? [];
 const projects = (others ?? [])
   .filter((r) => r.type === "project")
@@ -25,5 +31,5 @@ const projects = (others ?? [])
   <a class="a-back" href="/admin">← Overview</a>
   <p class="a-kicker">{TYPE_LABELS[type].one}</p>
   <h1 class="a-title">{itemTitle(type, row.draft)}</h1>
-  <Editor client:only="preact" type={type} slug={slug} draft={row.draft} published={row.published} categories={categories} projects={projects} />
+  <Editor client:only="preact" type={type} slug={slug} draft={draft} published={published} categories={categories} projects={projects} />
 </AdminLayout>

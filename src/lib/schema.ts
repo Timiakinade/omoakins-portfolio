@@ -111,6 +111,16 @@ export const pageSchema = z.object({
 });
 
 const label = z.object({ value: z.string(), label: z.string() });
+
+export const HOME_SECTIONS = ["intro", "work", "testimonials", "footer"] as const;
+const DEFAULT_NAV = [
+  { label: "Home", href: "/" },
+  { label: "Work", href: "/work" },
+  { label: "Blog", href: "/blog" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+];
+
 export const siteSchema = z.object({
   name: z.string(),
   person: z.string(),
@@ -121,7 +131,14 @@ export const siteSchema = z.object({
   callLink: z.string(),
   socials: z.array(z.object({ label: z.string(), href: z.string() })),
   categories: z.array(z.string()),
+  // Top menu, left to right. A /blog link only shows once a post is published.
+  nav: z.array(z.object({ label: z.string(), href: z.string() })).default(DEFAULT_NAV),
+  navButton: z.object({ label: z.string(), href: z.string() }).default({ label: "Book a call", href: "/contact" }),
   home: z.object({
+    // Home page sections, top to bottom; `show: false` hides one.
+    layout: z
+      .array(z.object({ section: z.enum(HOME_SECTIONS), show: z.boolean() }))
+      .default(HOME_SECTIONS.map((section) => ({ section, show: true }))),
     availability: z.string(),
     headline: z.array(z.string()),
     intro: z.string(),

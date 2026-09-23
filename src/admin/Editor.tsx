@@ -193,6 +193,35 @@ function SectionsField({ value, onChange, ctx }: { value: Obj[]; onChange: (v: O
   );
 }
 
+function LayoutField({ f, value, onChange }: { f: Extract<Field, { kind: "layout" }>; value: Obj[]; onChange: (v: Obj[]) => void }) {
+  // Always list every block, even ones added after this was last saved.
+  const items = [...(value ?? [])];
+  for (const section of Object.keys(f.names)) if (!items.some((x) => x.section === section)) items.push({ section, show: true });
+  const move = (i: number, d: number) => {
+    const next = [...items];
+    [next[i], next[i + d]] = [next[i + d], next[i]];
+    onChange(next);
+  };
+  return (
+    <div class="f-row">
+      <div class="a-label">{f.label}</div>
+      {items.map((x, i) => (
+        <div class="f-layout" key={x.section}>
+          <label class="f-check">
+            <input type="checkbox" checked={x.show} onChange={(e) => onChange(items.map((y, j) => (j === i ? { ...y, show: e.currentTarget.checked } : y)))} />
+            <span class={x.show ? "" : "a-muted"}>{f.names[x.section] ?? x.section}</span>
+          </label>
+          <span class="f-item-tools">
+            <button type="button" class="a-link" disabled={i === 0} onClick={() => move(i, -1)} aria-label="Move up">↑</button>
+            <button type="button" class="a-link" disabled={i === items.length - 1} onClick={() => move(i, 1)} aria-label="Move down">↓</button>
+          </span>
+        </div>
+      ))}
+      {f.help && <p class="f-help">{f.help}</p>}
+    </div>
+  );
+}
+
 function FieldView({ f, value, onChange, ctx }: { f: Field; value: Obj; onChange: (v: Obj) => void; ctx: Ctx }) {
   const id = useId();
   if (f.kind === "fieldset") {
@@ -270,6 +299,8 @@ function FieldView({ f, value, onChange, ctx }: { f: Field; value: Obj; onChange
       return <ListField f={f} value={v} onChange={set} ctx={ctx} />;
     case "sections":
       return <SectionsField value={v} onChange={set} ctx={ctx} />;
+    case "layout":
+      return <LayoutField f={f} value={v} onChange={set} />;
     case "projects": {
       const chosen: string[] = v ?? [];
       return (

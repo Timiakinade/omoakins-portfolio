@@ -14,7 +14,8 @@ export type Field =
   | (Base & { kind: "fieldset"; fields: Field[] }) // visual grouping only
   | (Base & { kind: "list"; key: string; item: string; fields: Field[]; blank: () => Record<string, unknown> })
   | (Base & { kind: "sections"; key: string })
-  | (Base & { kind: "projects"; key: string }); // pick projects by name
+  | (Base & { kind: "projects"; key: string }) // pick projects by name
+  | (Base & { kind: "layout"; key: string; names: Record<string, string> }); // fixed blocks: reorder + show/hide
 
 const seo: Field = {
   kind: "group",
@@ -203,7 +204,37 @@ export const FIELDS: Record<EntryType, Field[]> = {
       ],
     },
     {
+      kind: "fieldset", label: "Top menu", fields: [
+        {
+          kind: "list", key: "nav", item: "menu link", label: "Menu links, left to right",
+          help: "Remove a link to hide that page from the menu (the page still exists). A Blog link only appears once a post is published. To link a landing page, use its address, e.g. /services.",
+          fields: [
+            { kind: "text", key: "label", label: "Text", placeholder: "Work" },
+            { kind: "url", key: "href", label: "Goes to", placeholder: "/work" },
+          ],
+          blank: () => ({ label: "", href: "/" }),
+        },
+        {
+          kind: "group", key: "navButton", label: "Green menu button", help: "Leave the text empty for no button.",
+          fields: [
+            { kind: "text", key: "label", label: "Button text" },
+            { kind: "url", key: "href", label: "Goes to" },
+          ],
+        },
+      ],
+    },
+    {
       kind: "group", key: "home", label: "Home page", fields: [
+        {
+          kind: "layout", key: "layout", label: "Sections, top to bottom",
+          help: "Use the arrows to reorder. Untick to hide a section.",
+          names: {
+            intro: "Headline, intro and numbers",
+            work: "Work tiles and filters",
+            testimonials: "Testimonials",
+            footer: "Footer bar (question, social links, button)",
+          },
+        },
         { kind: "text", key: "availability", label: "Availability line" },
         { kind: "lines", key: "headline", label: "Headline", help: "Each line of text becomes its own line." },
         { kind: "textarea", key: "intro", label: "Intro" },

@@ -20,13 +20,9 @@ const description = Astro.props.description ?? site.description;
 const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || "/", Astro.site);
 const image = new URL(ogImage || `/og/${og}.png`, Astro.site);
 
-const links = [
-  { key: "home", href: "/", label: "Home" },
-  { key: "work", href: "/work", label: "Work" },
-  ...(hasPosts ? [{ key: "blog", href: "/blog", label: "Blog" }] : []),
-  { key: "about", href: "/about", label: "About" },
-  { key: "contact", href: "/contact", label: "Contact" },
-];
+// Menu from Site settings. A Blog link waits until there's a published post to read.
+const links = site.nav.filter((l) => hasPosts || l.href !== "/blog");
+const active = (href: string) => (nav === "home" ? href === "/" : !!nav && href === `/${nav}`);
 ---
 <!doctype html>
 <html lang="en">
@@ -72,8 +68,8 @@ const links = [
       <span class="name">{site.name}</span>
     </a>
     <nav class="nav" id="nav">
-      {links.map((l) => <a href={l.href} class:list={{ active: nav === l.key }} aria-current={nav === l.key ? "page" : undefined}>{l.label}</a>)}
-      <a class="btn" href="/contact"><span class="dot"></span>Book a call</a>
+      {links.map((l) => <a href={l.href} class:list={{ active: active(l.href) }} aria-current={active(l.href) ? "page" : undefined}>{l.label}</a>)}
+      {site.navButton.label && <a class="btn" href={site.navButton.href}><span class="dot"></span>{site.navButton.label}</a>}
     </nav>
     <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
   </header>

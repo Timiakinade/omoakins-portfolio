@@ -90,6 +90,7 @@
   .stats .div{width:1px;background:var(--line);}
 
   /* filters */
+  .band + .filters,.testimonials + .filters{padding-top:48px;}
   .filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 24px 24px;}
   .chip{appearance:none;line-height:inherit;padding:8px 16px;background:var(--surface);border:1px solid var(--line);
     border-radius:999px;font-family:'Space Mono',monospace;text-transform:uppercase;
