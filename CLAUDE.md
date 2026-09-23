@@ -14,32 +14,38 @@ Three surfaces exist for this project; **this repo is the code source of truth**
 These are not auto-synced — a change here does not update Figma or the artifact.
 
 ## Stack
-Astro (static output) on Vercel; code in GitHub `Timiakinade/omoakins-portfolio`. Node lives at
-`~/.local/node/bin` on Timi's Mac (not on PATH — prefix commands with `export PATH=$HOME/.local/node/bin:$PATH`).
+Astro on Vercel (public pages prerendered; `/admin`, `/preview`, `/api` run on demand via `@astrojs/vercel`).
+Content lives in **Supabase** (project `sqffpsyywzgxkjkjwlue`), not in the repo. Code in GitHub `Timiakinade/omoakins-portfolio`.
+Node lives at `~/.local/node/bin` on Timi's Mac (not on PATH — prefix commands with `export PATH=$HOME/.local/node/bin:$PATH`).
 Fonts: Bebas Neue (display), DM Sans (body), Space Mono (mono labels) via Google Fonts;
 `@fontsource` copies are used only to draw share images.
 
-Roadmap (Timi edits with no code): phase 1 = this Astro site; phase 2 = admin dashboard
-(Supabase for login/database/images, draft → preview → publish); phase 3 = messages inbox + analytics.
+Roadmap: phase 1 (Astro site) and phase 2 (dashboard) done; phase 3 = messages inbox + visitor analytics
+(the sidebar already shows them as "Coming soon").
+
+## How content works
+- Table `public.entries`: one row per item (`type` = project | post | page | testimonial | settings, `slug`),
+  with `draft` (being edited) and `published` (live) JSON. Schema + RLS: `supabase/migrations/`.
+  The public (publishable) key can read only `published`; only emails in `public.admins` can do anything else.
+- The build reads published rows (`src/content.config.ts` loaders → `src/lib/content.ts`).
+- Dashboard at `/admin` (email + password, Timi only). Sidebar by page (`src/admin/nav.ts`); form fields and
+  plain-language labels in `src/admin/fields.ts`; editor UI `src/admin/Editor.tsx` (Preact).
+  Site settings is one row split across screens; each screen publishes only its own keys.
+- Save draft → Preview (`/admin/preview/...` full screen, iframe of `/preview/...`) → Publish
+  (`/api/admin/publish` validates with `src/lib/schema.ts`, copies draft → published, calls Vercel `DEPLOY_HOOK_URL`).
+- Images upload to the Supabase Storage bucket `media`.
+- `/api/keepalive` runs daily (Vercel cron) so the free Supabase project doesn't pause.
+- Password reset: Supabase → Authentication → Users → delete and re-add Timi with Auto Confirm.
 
 ## Files
-- `src/content/` — **all content**. The dashboard (phase 2) will edit these same shapes.
-  - `projects/<slug>.json` — one per case study (drives Home tile, Work tile, `/work/<slug>`).
-  - `posts/<slug>.md` — blog posts (`/blog/<slug>`).
-  - `pages/<slug>.json` — landing pages made of sections (`/<slug>`).
-  - `testimonials.json` — Home testimonials, shown before the footer band.
-  - `site.json` — all other page copy: hero, stats, About, Contact, socials, categories.
-- `src/content.config.ts` — the schema for every collection (field names + meaning).
-- `src/pages/` — routes. `og/[...path].png.ts` generates a share image per page (`src/lib/og.ts`).
-- `src/layouts/Base.astro` — `<head>` (title, description, canonical, share tags) + nav.
-- `src/components/` — Tile, Preview, Testimonials, Band, Eyebrow.
-- `src/styles/global.css` — all CSS. Design tokens are CSS variables in `:root` at the top.
-- `src/scripts/site.ts` — menu, filters, scroll reveal, contact form stub.
+- `src/lib/schema.ts` — shape of every content type (used by build, preview and publish).
+- `src/views/` — page templates, fed either published content (`src/pages/`) or drafts (`src/pages/preview/`).
+- `src/layouts/Base.astro` — public `<head>` + menu; `AdminLayout.astro` — dashboard shell with sidebar.
+- `src/middleware.ts` — admin gate (verifies the login locally, caches the admin check 5 min).
+- `src/styles/global.css` (tokens in `:root`), `src/styles/admin.css`.
+- `scripts/export-seed.mjs` — one-off that generated the initial Supabase content (`supabase/setup.sql`, not committed).
 
-Drafts: any item with `"draft": true` shows locally and on Vercel preview links, never on the live site.
-Old `#case/<id>` / `#work` links redirect to the real pages (inline script in `Base.astro`).
-
-Commands: `npm run dev` (localhost:4321), `npm run build` (→ `dist/`), `npx astro check`.
+Commands: `npm run dev` (localhost:4321), `npm run build`, `npx astro check`.
 
 ## Design system (honor these — house standards)
 - Palette (tokens): bg `#0D0D0F`, surface `#131316`, inset `#0A0A0C`, borders `#1F1F22`/`#26262A`,
@@ -50,13 +56,7 @@ Commands: `npm run dev` (localhost:4321), `npm run build` (→ `dist/`), `npx as
 - Cards: content hugs, nothing truncated/clipped, clean previews. Rows keep equal heights.
 - Committed dark theme (single visual world) — paint backgrounds explicitly.
 
-## Known placeholders to replace with real detail
-- Case-study `overview` / `challenge` / `approach` / `outcome` / `stat` in `src/content/projects/*.json`.
-- Hero visuals + screens (`heroImage`, `screens`, `cover` fields are empty → placeholder blocks).
-- `site.json`: email `hello@omoakins.com`, social links (`#`), `callLink`, `about.portrait`, hero stats.
-- Draft placeholders: `testimonials.json` (3), `posts/sample-post.md`, `pages/services.json`.
-
-## Reasonable next steps
-- Connect Vercel to the repo, then turn off GitHub Pages (Settings → Pages).
-- Swap placeholder case-study copy with Timi's real projects (Providus, Faith, LG, Livestock strongest first).
-- Phase 2: the dashboard. Phase 3: contact form → inbox, analytics.
+## Known placeholders to replace with real detail (all editable in the dashboard)
+- Case-study copy and stats for every project; hero images, screens and covers are empty.
+- Contact email `hello@omoakins.com`, social links (`#`), book-a-call link, About portrait, Home stats.
+- Draft placeholders: 3 testimonials, a sample blog post, a sample Services landing page.
