@@ -52,9 +52,9 @@ const name = shortName(d.name);
     ) : s.type === "images" ? (
       <div class:list={["ca-row", { "cs-images": s.heading }]}>
         {s.heading && <h2 class="cs-images-h">{s.heading}</h2>}
-        {s.images.length > 0 ? (
+        {s.images.some((img) => img.src) ? (
           <div class="cs-screens">
-            {s.images.map((img) => (
+            {s.images.filter((img) => img.src).map((img) => (
               <figure>
                 <img src={img.src} alt={img.alt} loading="lazy" />
                 {img.caption && <figcaption>{img.caption}</figcaption>}

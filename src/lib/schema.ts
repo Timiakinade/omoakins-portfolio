@@ -31,7 +31,8 @@ export const caseSectionSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("images"), // a row of screens; shows a placeholder until images are added
     heading: z.string().optional(),
-    images: z.array(z.object({ src: z.string(), alt: z.string(), caption: z.string().optional() })).default([]),
+    // Slots without a picture yet are allowed; they just don't show.
+    images: z.array(z.object({ src: z.string().optional(), alt: z.string().default(""), caption: z.string().optional() })).default([]),
   }),
   z.object({
     type: z.literal("number"), // text beside a big green number (e.g. Outcome)
@@ -221,6 +222,27 @@ export const siteSchema = z.object({
     projectTypes: z.array(z.string()),
   }),
 });
+
+/** Plain-language version of a validation problem, e.g. "Section 3, image 1: …". */
+export function describeIssue(issue: { path: PropertyKey[]; message: string }) {
+  const words: Record<string, string> = {
+    sections: "Section", images: "image", cards: "card", facts: "fact", side: "detail", items: "number",
+    screens: "screen", socials: "social link", nav: "menu link", stats: "number",
+  };
+  const parts: string[] = [];
+  const path = issue.path;
+  for (let i = 0; i < path.length; i++) {
+    const key = String(path[i]);
+    const next = path[i + 1];
+    if (typeof next === "number" && words[key]) {
+      parts.push(`${words[key]} ${next + 1}`);
+      i++;
+    } else parts.push(key.replace(/([A-Z])/g, " $1").toLowerCase());
+  }
+  const where = parts.join(", ");
+  const what = /received undefined/.test(issue.message) ? "is missing" : issue.message;
+  return `${where ? where.charAt(0).toUpperCase() + where.slice(1) : "This item"}: ${what}`;
+}
 
 export const schemas = {
   project: projectSchema,

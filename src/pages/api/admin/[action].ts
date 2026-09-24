@@ -4,7 +4,7 @@ export const prerender = false;
 import type { APIRoute } from "astro";
 import { rebuildSite } from "../../../lib/deploy";
 import { RESERVED_SLUGS } from "../../../lib/content";
-import { schemas, type EntryType } from "../../../lib/schema";
+import { describeIssue, schemas, type EntryType } from "../../../lib/schema";
 
 const fail = (error: string, status = 400) => Response.json({ error }, { status });
 
@@ -29,7 +29,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
           : draft;
       const parsed = schemas[type].safeParse(next);
       if (!parsed.success) {
-        const problems = parsed.error.issues.map((i) => `${i.path.join(" › ") || "Item"}: ${i.message}`);
+        const problems = parsed.error.issues.map(describeIssue);
         return Response.json({ error: "Fix these before publishing:", problems }, { status: 422 });
       }
       const res = await db

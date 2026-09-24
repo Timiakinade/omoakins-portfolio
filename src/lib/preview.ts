@@ -1,7 +1,7 @@
 /* Content for preview pages: the live (published) site, with one item swapped for its draft. */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { byDate, byOrder } from "./content";
-import { schemas, type EntryType, type Page, type Post, type Project, type Site, type Testimonial } from "./schema";
+import { describeIssue, schemas, type EntryType, type Page, type Post, type Project, type Site, type Testimonial } from "./schema";
 import type { EntryRow } from "./supabase";
 
 export interface PreviewContent {
@@ -26,7 +26,7 @@ export async function loadPreview(supabase: SupabaseClient, type: EntryType, slu
     found ||= isTarget;
     const parsed = schemas[row.type as EntryType]?.safeParse(raw);
     if (!parsed?.success) {
-      if (isTarget) out.problems = parsed ? parsed.error.issues.map((i) => `${i.path.join(" › ") || "Item"}: ${i.message}`) : ["Unknown type"];
+      if (isTarget) out.problems = parsed ? parsed.error.issues.map(describeIssue) : ["Unknown type"];
       continue;
     }
     const item = { id: row.slug, data: parsed.data } as never;
