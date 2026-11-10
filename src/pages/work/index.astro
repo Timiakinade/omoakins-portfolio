@@ -1,6 +1,0 @@
----
-import WorkView from "../../views/WorkView.astro";
-import { getPosts, getProjects, getSite } from "../../lib/content";
-const [site, projects, posts] = await Promise.all([getSite(), getProjects(), getPosts()]);
----
-<WorkView site={site} hasPosts={posts.length > 0} projects={projects} />

@@ -1,29 +1,43 @@
-# Omoakins — Portfolio
+# Omoakins portfolio
 
-Portfolio site for **Timi (Omoakin)** — a brand & product designer moving into product design.
-Dark editorial theme, bento landing, filterable work, case studies, blog and landing pages.
-
-Built with [Astro](https://astro.build) as a static site, hosted on Vercel.
+Next.js (App Router) on Vercel, Supabase behind it. Case studies are ordered
+arrays of blocks, so every project can be a different length and shape.
 
 ## Run locally
 
-Needs Node.js 22.12+.
+    npm install
+    npm run dev
 
-```bash
-npm install
-npm run dev      # http://localhost:4321
-npm run build    # production build into dist/
-```
+With no env vars set, the site runs on the built in content in `lib/content/`.
 
-## Where to make changes
+## Deploy (Vercel)
 
-- **Words, images, projects, blog posts, landing pages, testimonials, menu:** the dashboard at `/admin`.
-  Save a draft, preview it, then Publish; the site rebuilds in about a minute.
-- **Colours / spacing / type:** the `:root` variables at the top of `src/styles/global.css`.
-- **Page templates:** `src/views/`. **Content shapes:** `src/lib/schema.ts`. See `CLAUDE.md` for how it all fits.
+1. Push this folder to a GitHub repo.
+2. Vercel: Add New Project, import the repo. Framework is detected as Next.js. No settings needed.
+3. Every push to `main` deploys.
 
-## Deploy
+## Connect Supabase (when ready)
 
-Vercel builds every push to `main` automatically (framework: Astro). Set `DEPLOY_HOOK_URL` in Vercel
-(a Deploy Hook for `main`) so the dashboard's Publish button can rebuild the site.
-Set `SITE_URL` in Vercel if you add a custom domain, so share links and the sitemap use it.
+1. Create a Supabase project. SQL editor: run `supabase/schema.sql`, then add your email to `public.admins`.
+2. Vercel, Settings, Environment Variables: add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Redeploy.
+3. Until the tables have rows, the site keeps using the built in content.
+
+## Where things live
+
+| What | File |
+|---|---|
+| Case studies (seed) | `lib/content/case-studies.js` |
+| Site text, FAQ, filter labels | `lib/content/settings.js` |
+| Block types | `lib/blocks.js`, rendered in `components/blocks/Blocks.js` |
+| Tokens and layout | `app/globals.css` |
+
+Each case study carries a `theme` object (colours, display face) applied as CSS variables,
+so the interior changes per study while nav, footer and cards stay constant.
+
+## Before launch (TODO markers in the content files)
+
+- Email, Behance profile and LinkedIn URLs in `settings.js`
+- About copy, FAQ answers, toolkit: drafts to confirm
+- UBA: 8 vs 10 testers, timeline, client or self initiated (badge), prototype link
+- Providus and LG: on site write ups, LG Behance link, exact Providus brand hex
+- Real images: every empty `src` renders a sized placeholder frame

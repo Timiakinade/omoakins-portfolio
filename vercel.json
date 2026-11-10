@@ -1,6 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "astro",
-  "trailingSlash": false,
-  "crons": [{ "path": "/api/keepalive", "schedule": "0 9 * * *" }]
+  "framework": "nextjs"
 }

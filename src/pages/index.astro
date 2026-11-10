@@ -1,6 +1,0 @@
----
-import HomeView from "../views/HomeView.astro";
-import { getPosts, getProjects, getSite, getTestimonials } from "../lib/content";
-const [site, projects, testimonials, posts] = await Promise.all([getSite(), getProjects(), getTestimonials(), getPosts()]);
----
-<HomeView site={site} hasPosts={posts.length > 0} projects={projects} testimonials={testimonials} />
