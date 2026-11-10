@@ -38,6 +38,6 @@ so the interior changes per study while nav, footer and cards stay constant.
 
 - Email, Behance profile and LinkedIn URLs in `settings.js`
 - About copy, FAQ answers, toolkit: drafts to confirm
-- UBA: 8 vs 10 testers, timeline, client or self initiated (badge), prototype link
+- UBA: 8 vs 10 testers, timeline, client or self initiated (badge)
 - Providus and LG: on site write ups, LG Behance link, exact Providus brand hex
 - Real images: every empty `src` renders a sized placeholder frame
