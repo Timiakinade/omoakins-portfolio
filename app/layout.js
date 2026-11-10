@@ -10,7 +10,7 @@ export async function generateMetadata() {
   return { title: { default: `${s.wordmark}, ${s.role}`, template: `%s | ${s.wordmark}` }, description: s.hero.body };
 }
 
-const FONTS = "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=Space+Mono&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500&family=Sora:wght@400;500&display=swap";
+const FONTS = "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=Space+Mono&display=swap";
 
 export default async function RootLayout({ children }) {
   const settings = await getSettings();

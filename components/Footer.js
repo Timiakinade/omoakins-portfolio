@@ -1,37 +1,33 @@
 import Link from "next/link";
 import CopyEmail from "./CopyEmail";
+import Button from "./Button";
+import LocalTime from "./LocalTime";
 
-// Tariq's footer with Aliyu's link row underneath.
 export default function Footer({ settings }) {
   const socials = settings.socials.filter((s) => s.url);
   return (
     <footer className="footer" id="contact">
       <div className="container">
-        <p className="footer-ask">Ready for the work?</p>
-        <a href={settings.email ? `mailto:${settings.email}` : "/contact"} className="footer-big">Let&apos;s talk</a>
-        <div className="footer-panel">
-          <span className="handle h-tl" /><span className="handle h-tr" /><span className="handle h-bl" /><span className="handle h-br" />
-          <div>
-            <h3>{settings.availability}</h3>
+        <div className="footer-cta">
+          <p className="footer-big">Got something<br /><span className="accent">to build?</span></p>
+          <div className="footer-actions">
             <CopyEmail email={settings.email} />
+            <Button href={settings.email ? `mailto:${settings.email}` : "/contact"}>Start a conversation</Button>
           </div>
-          {socials.length > 0 && (
-            <div>
-              <h3>Connect on socials</h3>
-              <div className="socials">
-                {socials.map((s) => <a key={s.label} href={s.url} target="_blank" rel="noreferrer">{s.label}</a>)}
-              </div>
-            </div>
-          )}
         </div>
-        <div className="footer-row">
-          <span>© {new Date().getFullYear()} {settings.wordmark} · {settings.location}</span>
-          <nav aria-label="Footer">
-            <Link href="/#work">Work</Link>
-            <Link href="/about">About</Link>
-            <Link href="/contact">Contact</Link>
-            {settings.resume && <a href={settings.resume} target="_blank" rel="noreferrer">Resume</a>}
-          </nav>
+        <div className="footer-grid">
+          <div>
+            <h4>Pages</h4>
+            <ul><li><Link href="/#work">Work</Link></li><li><Link href="/about">About</Link></li><li><Link href="/contact">Contact</Link></li>{settings.resume && <li><a href={settings.resume} target="_blank" rel="noreferrer">Resume</a></li>}</ul>
+          </div>
+          <div>
+            <h4>Elsewhere</h4>
+            <ul>{socials.map((s) => <li key={s.label}><a href={s.url} target="_blank" rel="noreferrer">{s.label} ↗</a></li>)}</ul>
+          </div>
+          <div>
+            <h4>{settings.location}</h4>
+            <ul><li className="muted"><LocalTime timezone={settings.timezone} /> local time</li><li className="muted">© {new Date().getFullYear()} {settings.wordmark}</li></ul>
+          </div>
         </div>
       </div>
     </footer>

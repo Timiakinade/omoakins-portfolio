@@ -1,10 +1,11 @@
 import { Suspense } from "react";
-import Media from "@/components/Media";
+import Link from "next/link";
 import Button from "@/components/Button";
 import WorkSection from "@/components/WorkSection";
 import Faq from "@/components/Faq";
 import SectionRail from "@/components/SectionRail";
-import { Cursor } from "@/components/Icons";
+import LocalTime from "@/components/LocalTime";
+import { Arrow } from "@/components/Icons";
 import { getCaseStudies, getSettings } from "@/lib/data";
 
 export const revalidate = 60;
@@ -12,40 +13,80 @@ export const revalidate = 60;
 export default async function Home() {
   const [s, studies] = await Promise.all([getSettings(), getCaseStudies()]);
   const h = s.hero;
+  const feat = studies[0];
+  const ft = feat?.theme || {};
+  const stat = feat?.blocks?.find((b) => b.type === "stats")?.items?.[0];
+  const pathOn = s.path.length - 1;
+
   return (
     <>
-      {/* Tariq's canvas header */}
-      <section className="canvas" aria-labelledby="hero-title">
-        <svg className="stroke stroke-a" viewBox="0 0 520 420" aria-hidden="true">
-          <defs><linearGradient id="ga" x1="0" x2="1"><stop offset="0" stopColor="#1B5E4A" /><stop offset="1" stopColor="#6EE7B7" /></linearGradient></defs>
-          <path stroke="url(#ga)" d="M-20 380 C 120 380 240 300 250 200 C 260 90 160 60 130 120 C 100 190 220 230 300 150 C 360 90 380 30 400 -20" />
-        </svg>
-        <svg className="stroke stroke-b" viewBox="0 0 420 360" aria-hidden="true">
-          <defs><linearGradient id="gb" x1="0" x2="1"><stop offset="0" stopColor="#6EE7B7" /><stop offset="1" stopColor="#1B5E4A" /></linearGradient></defs>
-          <path stroke="url(#gb)" d="M440 40 C 300 20 180 80 170 180 C 160 280 260 330 360 300" />
-        </svg>
-        <div className="frame-wrap">
-          <div className="frame-meta">
-            <span className="frame-label">{h.frameLabel}</span>
-            <span className="status"><span className="dots" aria-hidden="true">{Array.from({ length: 9 }, (_, i) => <i key={i} />)}</span>{s.availability}</span>
-          </div>
-          <div className="frame">
-            <span className="handle h-tl" /><span className="handle h-tr" /><span className="handle h-bl" /><span className="handle h-br" />
-            <Media src={h.portrait} alt={`Portrait of ${s.name}`} ratio={315 / 368} label="Portrait" className="portrait" />
-            <div className="frame-copy">
-              <h1 id="hero-title">{h.heading}</h1>
+      <section className="container home-hero" aria-labelledby="statement">
+        <h1 id="statement" className="statement">
+          <span>{h.statement[0]}</span>
+          <span className="accent">{h.statement[1]}</span>
+        </h1>
+        <div className="hero-meta">
+          <div className="who"><span>{s.name}</span><span>{s.role}</span><span>{s.location}</span></div>
+          <span className="live"><span className="pulse" aria-hidden="true" />{s.availability}</span>
+        </div>
+
+        <div className="bento">
+          <div className="tile t-intro reveal">
+            <span className="kicker">Intro</span>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <h2><span className="soft">{h.intro}</span> {h.heading}</h2>
               <p>{h.body}</p>
             </div>
+            <div className="ctas">
+              <Button href="/#work">View work</Button>
+              <Button href={s.email ? `mailto:${s.email}` : "/contact"} ghost>Get in touch</Button>
+            </div>
           </div>
-          <div className="cursor" aria-hidden="true"><Cursor /><span>{h.cursor}</span></div>
-        </div>
-        <div className="hero-ctas">
-          <Button href="/#work">View work</Button>
-          <Button href={s.email ? `mailto:${s.email}` : "/contact"} ghost>Get in touch</Button>
+
+          {feat && (
+            <Link href={`/work/${feat.slug}`} className="tile t-feature reveal"
+              style={{ "--feat-bg": ft.mode === "dark" ? ft.surface : ft.accent, "--feat-ink": ft.mode === "dark" ? ft.accent : ft.onAccent }}>
+              <span className="kicker">Featured · {feat.client}</span>
+              {stat && (
+                <div>
+                  <div className="big">{stat.value}</div>
+                  <p className="cap">people surveyed {stat.label}</p>
+                </div>
+              )}
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <p className="title">{feat.title}</p>
+                <span className="go">Read the case study <Arrow /></span>
+              </div>
+            </Link>
+          )}
+
+          <div className="tile t-path reveal">
+            <span className="kicker">The path</span>
+            <ol className="path">
+              {s.path.map((p, i) => <li key={p} className={i === pathOn ? "on" : ""}><span className="node" aria-hidden="true" />{p}</li>)}
+            </ol>
+          </div>
+
+          <div className="tile t-sectors reveal">
+            <span className="kicker">Sectors</span>
+            <div className="tags">{s.sectors.map((x) => <span key={x} className="tag">{x}</span>)}</div>
+            <span className="count">{String(s.sectors.length).padStart(2, "0")} sectors</span>
+          </div>
+
+          <div className="tile t-now reveal">
+            <span className="kicker">Now · {s.about.nowUpdated}</span>
+            <p>{s.about.now}</p>
+            <div className="clock"><span>{s.location.split(",")[0]}</span><LocalTime timezone={s.timezone} /></div>
+          </div>
+
+          <div className="tile t-brands reveal">
+            <span className="kicker">Brands I have worked with</span>
+            <ul>{s.clients.map((c) => <li key={c}>{c}</li>)}</ul>
+          </div>
         </div>
       </section>
 
-      <SectionRail items={[{ id: "work", label: "Work" }, { id: "faq", label: "FAQ" }, { id: "contact", label: "Contact" }]} />
+      <SectionRail items={[{ id: "work", label: "Work" }, { id: "faq", label: "Questions" }, { id: "contact", label: "Contact" }]} />
 
       <Suspense fallback={null}>
         <WorkSection studies={studies} categories={s.categories} subgroups={s.subgroups} />

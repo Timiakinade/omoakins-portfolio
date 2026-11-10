@@ -33,12 +33,13 @@ export default function WorkSection({ studies, categories, subgroups }) {
     ? [{ key: "", items: visible }]
     : [...new Set(visible.map((s) => s.subgroup || ""))].sort((a, b) => (a === "") - (b === "")).map((key) => ({ key, items: visible.filter((s) => (s.subgroup || "") === key) }));
 
+  let n = 0;
   return (
     <section id="work" className="container work" aria-labelledby="work-title">
       <div className="work-head">
         <div>
           <h2 id="work-title" className="section-title">{cat ? cat.heading : "Selected work"}</h2>
-          <p>{cat?.tagline || "Shipped products first, then case studies."}</p>
+          <p>{cat?.tagline || "Research led case studies, each with its own look."}</p>
         </div>
         {showFilter && (
           <div className="filters" role="group" aria-label="Filter projects">
@@ -54,7 +55,7 @@ export default function WorkSection({ studies, categories, subgroups }) {
           {g.key && subgroups[g.key] && (
             <div className="subgroup-head"><h3>{subgroups[g.key].heading}</h3>{subgroups[g.key].tagline && <p>{subgroups[g.key].tagline}</p>}</div>
           )}
-          <div className="cards">{g.items.map((s) => <WorkCard key={s.slug} study={s} />)}</div>
+          <div className="rows">{g.items.map((s) => <WorkCard key={s.slug} study={s} index={n++} />)}</div>
         </div>
       ))}
     </section>
