@@ -1,5 +1,4 @@
 import "./globals.css";
-import Topbar from "@/components/Topbar";
 import Dock from "@/components/Dock";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
@@ -24,7 +23,6 @@ export default async function RootLayout({ children }) {
       </head>
       <body>
         <a href="#main" className="skip">Skip to content</a>
-        <Topbar wordmark={settings.wordmark} />
         <main id="main">{children}</main>
         <Footer settings={settings} />
         <Dock />
