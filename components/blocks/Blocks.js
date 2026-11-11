@@ -33,6 +33,28 @@ export function Block({ block, study }) {
     case "stats":
       return <div className="b-stats">{(block.items || []).map((s, i) => <div key={i} className="stat"><strong>{s.value}</strong><span>{s.label}</span></div>)}</div>;
     case "decisions":
+      if (block.detailed) {
+        return (
+          <div className="b-ddecisions">
+            {(block.items || []).map((d, i) => (
+              <article key={i} className="ddecision reveal">
+                <div className="dd-copy">
+                  <span className="g-n">{String(i + 1).padStart(2, "0")}</span>
+                  <h3>{d.title}</h3>
+                  {[["Problem", d.problem], ["Decision", d.decision], ["Why", d.why]].filter(([, v]) => v).map(([k, v]) => (
+                    <div key={k} className="dd-part"><span className="b-label">{k}</span><p>{v}</p></div>
+                  ))}
+                </div>
+                <div className={`dd-shots n${(d.images || []).length}`}>
+                  {(d.images || []).map((im, j) => (
+                    <Media key={j} src={im.src} alt={im.alt} ratio={im.ratio || 390 / 844} className="screen" />
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        );
+      }
       return (
         <div className="b-decisions">
           {(block.items || []).map((d, i) => (

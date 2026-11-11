@@ -49,7 +49,7 @@ export default function PinGallery({ items = [] }) {
         <div className="pin-track" ref={track}>
           {items.map((it, i) => (
             <figure key={i} className="slide">
-              <Media src={it.src} alt={it.alt} ratio={it.ratio || 0.46} label={it.caption} />
+              <Media src={it.src} alt={it.alt} ratio={390 / 844} label={it.caption} className={it.src ? "screen" : ""} />
               {it.caption && <figcaption>{it.caption}</figcaption>}
             </figure>
           ))}

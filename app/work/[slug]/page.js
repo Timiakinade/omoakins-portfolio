@@ -56,7 +56,13 @@ export default async function CaseStudy({ params }) {
           </div>
         )}
         <div className="container cs-cover">
-          <Media src={study.cover?.src} alt={study.cover?.alt} ratio={study.cover?.ratio} label="Cover image" />
+          {study.cover?.phones?.length ? (
+            <div className="cover-phones" role="img" aria-label={study.cover.alt}>
+              {study.cover.phones.map((src, i) => <img key={src} src={src} alt="" className={`cp cp-${i}`} />)}
+            </div>
+          ) : (
+            <Media src={study.cover?.src} alt={study.cover?.alt} ratio={study.cover?.ratio} label="Cover image" />
+          )}
         </div>
 
         {/* Aliyu's chapter layout */}
