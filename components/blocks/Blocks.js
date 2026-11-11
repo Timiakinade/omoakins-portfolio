@@ -1,4 +1,5 @@
 import Media from "../Media";
+import ExpandImage from "../ExpandImage";
 import Button from "../Button";
 import PinGallery from "./PinGallery";
 import { Play, ArrowUpRight } from "../Icons";
@@ -6,9 +7,11 @@ import { Play, ArrowUpRight } from "../Icons";
 const paragraphs = (body) => (Array.isArray(body) ? body : String(body || "").split(/\n\n+/)).filter(Boolean);
 
 function Figure({ item }) {
+  // Tall images (or any image marked expand) get a preview and an Expand button.
+  const tall = item.src && (item.expand || (item.ratio && item.ratio < 0.75));
   return (
     <figure className="b-figure">
-      <Media src={item.src} alt={item.alt} ratio={item.ratio} label={item.caption} />
+      {tall ? <ExpandImage src={item.src} alt={item.alt} /> : <Media src={item.src} alt={item.alt} ratio={item.ratio} label={item.caption} />}
       {item.caption && item.src && <figcaption>{item.caption}</figcaption>}
     </figure>
   );
