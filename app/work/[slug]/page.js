@@ -36,7 +36,7 @@ export default async function CaseStudy({ params }) {
 
   return (
     <>
-      <article className="cs" style={themeVars(study.theme)}>
+      <article className="cs">
         {/* Iyanu's hero */}
         <header className="cs-hero">
           <div className="cs-orb" aria-hidden="true" />

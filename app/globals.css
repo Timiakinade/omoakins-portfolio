@@ -3,18 +3,20 @@
    claude.ai project doc "timi-picks-measured"). Spacing in multiples of 4. */
 
 :root {
-  --bg: #0d0d0f;
-  --surface: #131316;
-  --inset: #0a0a0c;
-  --line: #1f1f22;
-  --line-2: #26262a;
-  --ink: #f5f5f0;
-  --muted: #9a9a94;
-  --faint: #6b6b66;
-  --green: #1b5e4a;
-  --mint: #6ee7b7;
-  --on-green: #ecfdf5;
-  --accent: var(--mint);
+  /* Light is the default. Dark is the inverse, toggled from the dock. */
+  --bg: #ffffff;
+  --surface: #f6f6f4;
+  --inset: #eeeeea;
+  --line: #e7e7e3;
+  --line-2: #d9d9d4;
+  --ink: #111111;
+  --muted: #6b6b66;
+  --faint: #9a9a94;
+  --green: var(--ink);
+  --mint: var(--ink);
+  --on-green: var(--bg);
+  --accent: var(--ink);
+  color-scheme: light;
 
   --f-display: "Bebas Neue", "DM Sans", sans-serif;
   --f-body: "DM Sans", system-ui, sans-serif;
@@ -27,6 +29,17 @@
   --section: 144px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+[data-theme="dark"] {
+  --bg: #0d0d0f;
+  --surface: #131316;
+  --inset: #0a0a0c;
+  --line: #1f1f22;
+  --line-2: #26262a;
+  --ink: #f5f5f0;
+  --muted: #9a9a94;
+  --faint: #6b6b66;
+  color-scheme: dark;
 }
 @media (max-width: 900px) { :root { --gutter: 20px; --section: 96px; } }
 
@@ -52,13 +65,14 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .topbar a { pointer-events: auto; font-family: var(--f-display); font-size: 34px; line-height: 1; letter-spacing: 1px; color: #fff; mix-blend-mode: difference; }
 
 /* ---------- Bottom dock (Tariq) ---------- */
-.dock { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 90; display: flex; gap: 8px; padding: 4px; border-radius: 8px; background: #2a2a2e; border: 1px solid var(--line-2); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); }
+.dock { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 90; display: flex; gap: 8px; padding: 4px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14); }
 .dock a { position: relative; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 8px; color: var(--muted); transition: background 0.2s var(--ease), color 0.2s var(--ease); }
-.dock a:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); }
+.dock a:hover, .dock button:hover { color: var(--ink); background: var(--inset); }
 .dock a[aria-current="page"] { background: var(--inset); color: var(--ink); box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25); }
+.dock button { position: relative; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 8px; color: var(--muted); transition: background 0.2s var(--ease), color 0.2s var(--ease); }
 .dock svg { width: 18px; height: 18px; }
 .dock .tip { position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translate(-50%, 4px); padding: 4px 8px; border-radius: 6px; background: var(--ink); color: var(--bg); font-size: 12px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s var(--ease); }
-.dock a:hover .tip, .dock a:focus-visible .tip { opacity: 1; transform: translate(-50%, 0); }
+.dock a:hover .tip, .dock a:focus-visible .tip, .dock button:hover .tip, .dock button:focus-visible .tip { opacity: 1; transform: translate(-50%, 0); }
 
 /* ---------- Buttons: staggered colour wipe (Tariq) ---------- */
 .btn { position: relative; border-radius: 999px; display: inline-flex; align-items: center; justify-content: space-between; gap: 16px; min-width: 172px; height: 44px; padding: 0 10px 0 20px; overflow: hidden; background: var(--ink); color: var(--bg); font-size: 16px; font-weight: 500; isolation: isolate; }
@@ -85,14 +99,14 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 /* ---------- Page section rail (Iyanu) ---------- */
 .rail { position: fixed; right: 20px; top: 50%; z-index: 80; width: 200px; transform: translateY(-50%); transition: opacity 0.45s; }
 .rail.hide { opacity: 0; pointer-events: none; }
-.rail::before { content: ""; position: absolute; top: -16px; bottom: -16px; right: 3px; width: 1px; background: linear-gradient(transparent, rgba(255, 255, 255, 0.16) 20%, rgba(255, 255, 255, 0.16) 80%, transparent); }
+.rail::before { content: ""; position: absolute; top: -16px; bottom: -16px; right: 3px; width: 1px; background: linear-gradient(transparent, color-mix(in srgb, var(--ink) 16%, transparent) 20%, color-mix(in srgb, var(--ink) 16%, transparent) 80%, transparent); }
 .rail ol { display: flex; flex-direction: column; align-items: flex-end; }
 .rail a { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
-.rail .lbl { font-size: 11px; font-weight: 500; letter-spacing: 2.2px; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); transform-origin: right center; transition: color 0.3s, transform 0.4s var(--bounce); }
-.rail .dot { position: relative; width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, 0.35); border: 1px solid rgba(255, 255, 255, 0.2); transition: 0.35s var(--bounce); }
+.rail .lbl { font-size: 11px; font-weight: 500; letter-spacing: 2.2px; text-transform: uppercase; color: color-mix(in srgb, var(--ink) 60%, transparent); transform-origin: right center; transition: color 0.3s, transform 0.4s var(--bounce); }
+.rail .dot { position: relative; width: 7px; height: 7px; border-radius: 50%; background: color-mix(in srgb, var(--ink) 35%, transparent); border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent); transition: 0.35s var(--bounce); }
 .rail a:hover .lbl { color: var(--ink); }
 .rail a.active .lbl { color: var(--accent); transform: scale(1.3); }
-.rail a.active .dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px rgba(110, 231, 183, 0.18), 0 0 16px rgba(110, 231, 183, 0.6); }
+.rail a.active .dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent), 0 0 16px color-mix(in srgb, var(--accent) 60%, transparent); }
 .rail a.active .dot::after { content: ""; position: absolute; inset: -1px; border-radius: 50%; border: 1.5px solid var(--accent); animation: ring 2s ease-out infinite; }
 @keyframes ring { 0% { transform: scale(1); opacity: 0.9; } 100% { transform: scale(2.8); opacity: 0; } }
 @media (max-width: 1100px) { .rail { display: none; } }
@@ -103,7 +117,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 /* ---------- Case study: themed interior, constant shell (Tsolaye) ---------- */
 .cs {
   --cs-bg: var(--bg); --cs-surface: var(--surface); --cs-ink: var(--ink); --cs-muted: var(--muted); --cs-line: var(--line);
-  --cs-accent: var(--mint); --cs-accent-soft: var(--surface); --cs-on-accent: var(--bg);
+  --cs-accent: var(--ink); --cs-accent-soft: var(--surface); --cs-on-accent: var(--bg);
   --cs-display: var(--f-body); --cs-display-style: normal; --cs-display-weight: 500; --cs-body: var(--f-body);
   --accent: var(--cs-accent); --frame-bg: var(--cs-accent-soft); --frame-line: var(--cs-line); --frame-ink: var(--cs-muted);
   background: var(--cs-bg); color: var(--cs-ink); font-family: var(--cs-body);
@@ -241,8 +255,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .hero-meta { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 24px; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
 .hero-meta .who { display: flex; flex-wrap: wrap; gap: 8px 24px; }
 .live { display: inline-flex; align-items: center; gap: 8px; }
-.live .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 4px rgba(110, 231, 183, 0.14); animation: pulse 2.4s ease-in-out infinite; }
-@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(110, 231, 183, 0.14); } 50% { box-shadow: 0 0 0 8px rgba(110, 231, 183, 0); } }
+.live .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent); animation: pulse 2.4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent); } 50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 0%, transparent); } }
 
 .bento { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; margin-top: 48px; }
 .tile { position: relative; display: flex; flex-direction: column; gap: 16px; padding: 28px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); overflow: hidden; }
@@ -266,7 +280,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .path li { display: grid; grid-template-columns: 24px 1fr; align-items: center; gap: 12px; padding: 8px 0; color: var(--muted); }
 .path li .node { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--faint); justify-self: center; }
 .path li.on { color: var(--ink); }
-.path li.on .node { background: var(--mint); border-color: var(--mint); box-shadow: 0 0 0 4px rgba(110, 231, 183, 0.14); }
+.path li.on .node { background: var(--mint); border-color: var(--mint); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent); }
 .path li + li { position: relative; }
 .path li + li::before { content: ""; position: absolute; left: 11px; top: -8px; height: 16px; width: 1px; background: var(--line-2); }
 .t-sectors .count { font-family: var(--f-display); font-size: 72px; line-height: 0.9; margin-top: auto; }
@@ -297,7 +311,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .row .num { font-family: var(--f-mono); font-size: 12px; color: var(--faint); align-self: start; padding-top: 8px; }
 .row .main { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 .row .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; color: var(--muted); font-size: 14px; }
-.badge { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.3px; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; background: rgba(110, 231, 183, 0.1); color: var(--mint); }
+.badge { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.3px; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--mint); }
 .row h3 { font-size: clamp(24px, 2.6vw, 34px); line-height: 1.15; letter-spacing: -0.5px; transition: color 0.3s var(--ease); }
 .row p { color: var(--muted); max-width: 640px; }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; }

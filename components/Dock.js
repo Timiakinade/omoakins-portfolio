@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, User, Grid, Mail } from "./Icons";
+import { useEffect, useState } from "react";
+import { Home, User, Grid, Mail, Sun, Moon } from "./Icons";
 
 // Tariq's dock: fixed bottom centre, icon buttons with tooltips.
 const ITEMS = [
@@ -14,6 +15,14 @@ const ITEMS = [
 
 export default function Dock() {
   const path = usePathname() || "/";
+  const [theme, setTheme] = useState("light");
+  useEffect(() => { setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light"); }, []);
+  const flip = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem("theme", next); } catch (e) {}
+    setTheme(next);
+  };
   return (
     <nav className="dock" aria-label="Main">
       {ITEMS.map(({ href, label, Icon, match }) => (
@@ -22,6 +31,10 @@ export default function Dock() {
           <span className="tip" aria-hidden="true">{label}</span>
         </Link>
       ))}
+      <button type="button" onClick={flip} aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
+        {theme === "dark" ? <Sun /> : <Moon />}
+        <span className="tip" aria-hidden="true">{theme === "dark" ? "Light" : "Dark"}</span>
+      </button>
     </nav>
   );
 }
