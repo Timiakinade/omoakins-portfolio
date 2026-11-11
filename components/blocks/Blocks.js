@@ -47,7 +47,10 @@ export function Block({ block, study }) {
                 </div>
                 <div className={`dd-shots n${(d.images || []).length}`}>
                   {(d.images || []).map((im, j) => (
-                    <Media key={j} src={im.src} alt={im.alt} ratio={im.ratio || 390 / 844} className="screen" />
+                    <figure key={j} className="dd-shot">
+                      {im.tag && <figcaption className={`dd-tag ${im.tag === "Before" ? "is-before" : ""}`}>{im.tag}</figcaption>}
+                      <Media src={im.src} alt={im.alt} ratio={im.ratio || 390 / 844} className="screen" />
+                    </figure>
                   ))}
                 </div>
               </article>
