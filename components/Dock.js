@@ -19,7 +19,11 @@ export default function Dock() {
   useEffect(() => { setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light"); }, []);
   const flip = () => {
     const next = theme === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
+    const root = document.documentElement;
+    root.classList.add("theme-anim");
+    root.dataset.theme = next;
+    window.clearTimeout(window.__themeT);
+    window.__themeT = window.setTimeout(() => root.classList.remove("theme-anim"), 700);
     try { localStorage.setItem("theme", next); } catch (e) {}
     setTheme(next);
   };

@@ -44,6 +44,10 @@
 @media (max-width: 900px) { :root { --gutter: 20px; --section: 96px; } }
 
 *, *::before, *::after { box-sizing: border-box; }
+/* Smooth light and dark switch: colours ease for a moment, then normal transitions return. */
+.theme-anim, .theme-anim *, .theme-anim *::before, .theme-anim *::after {
+  transition: background-color 0.6s ease-in-out, color 0.6s ease-in-out, border-color 0.6s ease-in-out, fill 0.6s ease-in-out, stroke 0.6s ease-in-out, box-shadow 0.6s ease-in-out, opacity 0.6s ease-in-out !important;
+}
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
 img { display: block; max-width: 100%; height: auto; }
