@@ -26,7 +26,7 @@ export default async function Home() {
           <span className="accent">{h.statement[1]}</span>
         </h1>
         <div className="hero-meta">
-          <div className="who"><span>{s.name}</span><span>{s.role}</span><span>{s.location}</span></div>
+          <div className="who">{s.name && <span>{s.name}</span>}<span>{s.role}</span><span>{s.location}</span></div>
           <span className="live"><span className="pulse" aria-hidden="true" />{s.availability}</span>
         </div>
 

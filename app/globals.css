@@ -1,4 +1,4 @@
-/* Timi portfolio. Dark editorial shell, trust green accent.
+/* Portfolio. Dark editorial shell, trust green accent.
    Each block below names the reference site it was measured from (see the
    claude.ai project doc "timi-picks-measured"). Spacing in multiples of 4. */
 
@@ -250,7 +250,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 
 /* =========================================================
-   Home, Timi's own: statement, bento, work index, questions
+   Home, own: statement, bento, work index, questions
    ========================================================= */
 .home-hero { padding-top: 136px; }
 .statement { font-family: var(--f-display); font-size: clamp(64px, 11.2vw, 168px); line-height: 0.88; letter-spacing: 0.5px; }
@@ -347,7 +347,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .qa-item.open .qa-a { grid-template-rows: 1fr; }
 @media (max-width: 1000px) { .qa { grid-template-columns: 1fr; gap: 24px; } }
 
-/* Footer, Timi's own */
+/* Footer, own */
 .footer { margin-top: var(--section); padding-top: 96px; padding-bottom: 120px; border-top: 1px solid var(--line); }
 .footer-cta { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end; }
 .footer-big { font-family: var(--f-display); font-size: clamp(72px, 12vw, 176px); line-height: 0.88; letter-spacing: 0.5px; }

@@ -1,7 +1,7 @@
 # Omoakins portfolio
 
 Next.js on Vercel, Supabase behind it (optional until the admin is built).
-Every feature is taken from a site Timi picked, measured off the live DOM.
+Every feature is taken from a site the owner picked, measured off the live DOM.
 Full spec: the claude.ai project doc "timi-picks-measured".
 
 | Feature | From |
