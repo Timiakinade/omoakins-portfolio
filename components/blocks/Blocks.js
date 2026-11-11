@@ -153,6 +153,41 @@ export function Block({ block, study }) {
           ))}
         </div>
       );
+    case "personas":
+      return (
+        <div className="b-personas">
+          {(block.items || []).map((u, i) => (
+            <article key={i} className="persona">
+              <div className="persona-head">
+                <span className="persona-av" aria-hidden="true">{u.name.slice(0, 1)}</span>
+                <div><h3>{u.name}</h3><p>{u.role}</p></div>
+              </div>
+              <span className="b-label">Goals</span>
+              <ul className="persona-goals">
+                {(u.goals || []).map((g, j) => (
+                  <li key={j}><span>{g.label}</span><i className="bar"><b style={{ width: `${Math.round((g.level || 0) * 100)}%` }} /></i></li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      );
+    case "empathy":
+      return (
+        <div className="b-empathy">
+          <div className="em-head"><span className="persona-av" aria-hidden="true">{block.name.slice(0, 1)}</span><span>{block.name}'s empathy map</span></div>
+          <div className="em-grid">
+            {(block.items || []).map((q, i) => (
+              <section key={i} className="em-q">
+                <h4>{block.pronoun || "She"} <em>{q.k}</em></h4>
+                <ul className={q.quotes ? "is-quotes" : ""}>
+                  {(q.lines || []).map((l, j) => <li key={j}>{q.quotes ? <>&ldquo;{l}&rdquo;</> : l}</li>)}
+                </ul>
+              </section>
+            ))}
+          </div>
+        </div>
+      );
     case "goals":
       return (
         <ol className="b-goals">

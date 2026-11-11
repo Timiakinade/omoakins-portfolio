@@ -460,3 +460,27 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .viewer-scroll { width: min(1512px, 100%); height: 100%; overflow-y: auto; overscroll-behavior: contain; padding: 64px clamp(12px, 4vw, 48px) 48px; }
 .viewer-scroll img { display: block; width: 100%; height: auto; border-radius: 8px; background: #fff; }
 .viewer-close { position: fixed; top: 16px; right: 16px; z-index: 301; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 999px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); cursor: pointer; }
+
+/* Personas and empathy maps */
+.b-personas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.persona { display: flex; flex-direction: column; gap: 20px; padding: 28px; border-radius: 12px; background: var(--cs-surface); border: 1px solid var(--cs-line); }
+.persona-head { display: flex; align-items: center; gap: 16px; }
+.persona-head h3 { font-size: 24px; font-weight: 500; line-height: 1.2; }
+.persona-head p { margin-top: 2px; font-size: 14px; color: var(--cs-muted); }
+.persona-av { flex: none; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: 20px; font-weight: 500; }
+.persona-goals { display: flex; flex-direction: column; gap: 18px; margin-top: -8px; }
+.persona-goals li { display: flex; flex-direction: column; gap: 8px; font-size: 15px; }
+.persona-goals .bar { display: block; height: 6px; border-radius: 999px; background: var(--cs-line); overflow: hidden; }
+.persona-goals .bar b { display: block; height: 100%; border-radius: 999px; background: var(--ink); }
+.b-empathy { display: flex; flex-direction: column; gap: 16px; }
+.em-head { display: flex; align-items: center; gap: 12px; font-size: 15px; color: var(--cs-muted); }
+.em-head .persona-av { width: 32px; height: 32px; font-size: 14px; }
+.em-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.em-q { padding: 24px; border-radius: 12px; background: var(--cs-surface); border: 1px solid var(--cs-line); }
+.em-q h4 { font-size: 18px; font-weight: 500; margin-bottom: 14px; }
+.em-q h4 em { font-style: italic; font-weight: 500; }
+.em-q ul { display: flex; flex-direction: column; gap: 10px; }
+.em-q li { font-size: 15px; line-height: 1.5; color: var(--cs-muted); padding-left: 16px; position: relative; }
+.em-q li::before { content: ""; position: absolute; left: 0; top: 0.65em; width: 5px; height: 5px; border-radius: 999px; background: var(--ink); }
+.em-q ul.is-quotes li { color: var(--ink); font-style: italic; }
+@media (max-width: 720px) { .b-personas, .em-grid { grid-template-columns: 1fr; } }
