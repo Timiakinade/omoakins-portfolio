@@ -55,7 +55,7 @@ export default async function CaseStudy({ params }) {
             <dl className="cs-glance">{study.glance.map((g) => <div key={g.label}><dt>{g.value}</dt><dd>{g.label}</dd></div>)}</dl>
           </div>
         )}
-        <div className="container cs-cover">
+        {(study.cover?.src || study.cover?.phones?.length) && <div className="container cs-cover">
           {study.cover?.phones?.length ? (
             <div className="cover-phones" role="img" aria-label={study.cover.alt}>
               {study.cover.phones.map((src, i) => <img key={src} src={src} alt="" className={`cp cp-${i}`} />)}
@@ -63,7 +63,7 @@ export default async function CaseStudy({ params }) {
           ) : (
             <Media src={study.cover?.src} alt={study.cover?.alt} ratio={study.cover?.ratio} label="Cover image" />
           )}
-        </div>
+        </div>}
 
         {/* Aliyu's chapter layout */}
         <div className="container cs-layout">

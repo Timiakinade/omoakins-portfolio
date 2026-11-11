@@ -37,7 +37,7 @@ export function Block({ block, study }) {
         return (
           <div className="b-ddecisions">
             {(block.items || []).map((d, i) => (
-              <article key={i} className="ddecision reveal">
+              <article key={i} className={`ddecision reveal${(d.images || []).length ? "" : " no-shots"}`}>
                 <div className="dd-copy">
                   <span className="g-n">{String(i + 1).padStart(2, "0")}</span>
                   <h3>{d.title}</h3>
@@ -45,14 +45,14 @@ export function Block({ block, study }) {
                     <div key={k} className="dd-part"><span className="b-label">{k}</span><p>{v}</p></div>
                   ))}
                 </div>
-                <div className={`dd-shots n${(d.images || []).length}`}>
+                {(d.images || []).length > 0 && <div className={`dd-shots n${(d.images || []).length}`}>
                   {(d.images || []).map((im, j) => (
                     <figure key={j} className="dd-shot">
                       {im.tag && <figcaption className={`dd-tag ${im.tag === "Before" ? "is-before" : ""}`}>{im.tag}</figcaption>}
                       <Media src={im.src} alt={im.alt} ratio={im.ratio || 390 / 844} className="screen" />
                     </figure>
                   ))}
-                </div>
+                </div>}
               </article>
             ))}
           </div>

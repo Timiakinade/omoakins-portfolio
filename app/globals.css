@@ -428,4 +428,6 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .dd-shots.n1 .media { max-width: 260px; }
 .dd-shots.n1 .media[style*="0.32"] { max-height: 640px; }
 .ddecision:nth-child(even) .dd-copy { order: 2; }
+.ddecision.no-shots { grid-template-columns: minmax(0, 1fr); }
+.ddecision.no-shots:nth-child(even) .dd-copy { order: 0; }
 @media (max-width: 1000px) { .ddecision { grid-template-columns: 1fr; padding: 20px; } .ddecision:nth-child(even) .dd-copy { order: 0; } }
