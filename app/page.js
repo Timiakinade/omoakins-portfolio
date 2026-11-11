@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Button from "@/components/Button";
 import WorkSection from "@/components/WorkSection";
 import Faq from "@/components/Faq";
+import Marquee from "@/components/Marquee";
 import SectionRail from "@/components/SectionRail";
 import { getCaseStudies, getSettings } from "@/lib/data";
 
@@ -32,6 +33,8 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      <Marquee items={s.clients} />
 
       <SectionRail items={[{ id: "work", label: "Work" }, { id: "faq", label: "Questions" }, { id: "contact", label: "Contact" }]} />
 
