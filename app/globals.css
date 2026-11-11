@@ -407,7 +407,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .finding:last-child:nth-child(odd) { grid-column: 1 / -1; }
 
 /* ---------- Real screens ---------- */
-.media.screen { border-radius: 28px; border: 1px solid var(--cs-line); background: #fff; box-shadow: 0 24px 48px rgba(0, 0, 0, 0.08); }
+.media.screen { border-radius: 6px; border: 1px solid var(--cs-line); background: #fff; box-shadow: none; }
 .media.screen img { object-position: top center; }
 .cover-phones { position: relative; display: flex; justify-content: center; align-items: center; gap: 24px; height: clamp(420px, 52vw, 680px); border-radius: 16px; overflow: hidden; background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--cs-accent) 80%, #fff) 0%, var(--cs-accent) 60%, color-mix(in srgb, var(--cs-accent) 75%, #000) 100%); }
 .cover-phones .cp { width: clamp(150px, 18vw, 260px); border-radius: 28px; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.28); }
