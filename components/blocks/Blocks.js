@@ -65,6 +65,85 @@ export function Block({ block, study }) {
         </div>
       );
     }
+    case "context":
+      return (
+        <div className="b-context">
+          <div><span className="b-label">The product</span><p>{block.product}</p></div>
+          <div><span className="b-label">My role</span><ul className="b-bullets">{(block.role || []).map((r, i) => <li key={i}>{r}</li>)}</ul></div>
+        </div>
+      );
+    case "scope":
+      return (
+        <div className="b-scope">
+          <div><span className="b-label">In scope</span><ul className="b-bullets">{(block.in || []).map((r, i) => <li key={i}>{r}</li>)}</ul></div>
+          <div><span className="b-label">Out of scope</span><ul className="b-bullets muted-list">{(block.out || []).map((r, i) => <li key={i}>{r}</li>)}</ul></div>
+        </div>
+      );
+    case "bars":
+      return (
+        <div className="b-bars">
+          {block.title && <p className="b-bars-title">{block.title}</p>}
+          {block.note && <p className="b-bars-note">{block.note}</p>}
+          {(block.items || []).map((it, i) => (
+            <div key={i} className="bar-row">
+              <span>{it.label}</span>
+              <span className="bar"><span style={{ width: `${(it.value / it.of) * 100}%` }} /></span>
+              <span className="bar-val">{it.value} of {it.of}</span>
+            </div>
+          ))}
+        </div>
+      );
+    case "journey": {
+      const rows = [["What happens today", "today"], ["What users said", "said"], ["Likely feeling", "feeling"], ["In the redesign", "fix"]];
+      const st = block.stages || [];
+      return (
+        <div className="b-journey" role="region" aria-label="Journey map" tabIndex={0}>
+          <table>
+            <thead><tr><th scope="col">Stage</th>{st.map((s, i) => <th key={i} scope="col"><span className="j-n">{i + 1}</span>{s.stage}</th>)}</tr></thead>
+            <tbody>
+              {rows.map(([label, key]) => (
+                <tr key={key} className={`j-${key}`}>
+                  <th scope="row">{label}</th>
+                  {st.map((s, i) => <td key={i}>{key === "feeling" ? <span className="j-pill">{s[key]}</span> : s[key]}</td>)}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+    case "findings":
+      return (
+        <div className="b-findings">
+          {(block.items || []).map((f, i) => (
+            <article key={i} className="finding">
+              <div className="f-head"><span className="f-letter" aria-hidden="true">{String.fromCharCode(65 + i)}</span><h3>{f.title}</h3></div>
+              {f.by && <span className="f-by">Raised by {f.by}</span>}
+              <p>{f.body}</p>
+              {f.quote && <blockquote><p>&ldquo;{f.quote}&rdquo;</p>{f.who && <cite>{f.who}</cite>}</blockquote>}
+            </article>
+          ))}
+        </div>
+      );
+    case "goals":
+      return (
+        <ol className="b-goals">
+          {(block.items || []).map((g, i) => (
+            <li key={i}><span className="g-n">{String(i + 1).padStart(2, "0")}</span><h3>{g.title}</h3><p>{g.body}</p></li>
+          ))}
+        </ol>
+      );
+    case "hmw":
+      return (
+        <div className="b-hmw">
+          {block.intro && <p className="hmw-intro">{block.intro}</p>}
+          <ol>
+            {(block.items || []).map((h, i) => (
+              <li key={i}><span className="g-n">{String(i + 1).padStart(2, "0")}</span><p><em>How might we</em> {h.q}</p>{h.from && <span className="f-by">From {h.from}</span>}</li>
+            ))}
+          </ol>
+        </div>
+      );
     case "divider":
       return <hr style={{ border: 0, borderTop: "1px solid var(--cs-line)", margin: 0 }} />;
     default:

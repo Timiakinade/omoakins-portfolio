@@ -49,6 +49,12 @@ export default async function CaseStudy({ params }) {
             )}
           </div>
         </header>
+        {study.glance?.length > 0 && (
+          <div className="container cs-glance-wrap">
+            <span className="b-label">Results at a glance</span>
+            <dl className="cs-glance">{study.glance.map((g) => <div key={g.label}><dt>{g.value}</dt><dd>{g.label}</dd></div>)}</dl>
+          </div>
+        )}
         <div className="container cs-cover">
           <Media src={study.cover?.src} alt={study.cover?.alt} ratio={study.cover?.ratio} label="Cover image" />
         </div>
