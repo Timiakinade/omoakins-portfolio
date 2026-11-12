@@ -512,7 +512,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
 }
 
-/* Page transition: grey, black and white sheets cover the page from different directions, then leave */
+/* Page transition: grey, black and white sheets wipe across the page left to right, then leave to the right */
 .pt { position: fixed; inset: 0; z-index: 1000; pointer-events: none; overflow: hidden; visibility: hidden; }
 .pt[data-state="cover"], .pt[data-state="reveal"] { visibility: visible; }
 .pt[data-state="cover"] { pointer-events: all; }
@@ -527,9 +527,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .pt[data-state="reveal"] .pt-black { animation: pt-black-out 0.6s cubic-bezier(0.76, 0, 0.24, 1) 0.12s both; }
 .pt[data-state="reveal"] .pt-grey { animation: pt-grey-out 0.6s cubic-bezier(0.76, 0, 0.24, 1) 0.24s both; }
 @keyframes pt-grey-in { from { transform: translateX(-101%); } to { transform: none; } }
-@keyframes pt-black-in { from { transform: translateY(101%); } to { transform: none; } }
-@keyframes pt-white-in { from { transform: translateY(-101%); } to { transform: none; } }
-@keyframes pt-white-out { from { transform: none; } to { transform: translateY(101%); } }
-@keyframes pt-black-out { from { transform: none; } to { transform: translateY(-101%); } }
+@keyframes pt-black-in { from { transform: translateX(-101%); } to { transform: none; } }
+@keyframes pt-white-in { from { transform: translateX(-101%); } to { transform: none; } }
+@keyframes pt-white-out { from { transform: none; } to { transform: translateX(101%); } }
+@keyframes pt-black-out { from { transform: none; } to { transform: translateX(101%); } }
 @keyframes pt-grey-out { from { transform: none; } to { transform: translateX(101%); } }
 @media (prefers-reduced-motion: reduce) { .pt { display: none; } }

@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 // Page transition: clicking an internal link covers the screen with three monochrome
-// sheets (grey from the left, black from the bottom, white from the top), swaps the
-// page underneath, then the sheets leave in three different directions.
+// sheets (grey, black, white, all wiping left to right), swaps the
+// page underneath, then the sheets leave to the right, one after another.
 const COVER_MS = 840;
 const REVEAL_MS = 840;
 
