@@ -2,7 +2,7 @@ import "./globals.css";
 import Dock from "@/components/Dock";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
-import Loader from "@/components/Loader";
+import PageTransition from "@/components/PageTransition";
 import { getSettings } from "@/lib/data";
 
 export async function generateMetadata() {
@@ -17,13 +17,13 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js');try{if(sessionStorage.getItem('loaded')==='1')document.documentElement.classList.add('seen');if(localStorage.getItem('theme')==='dark')document.documentElement.dataset.theme='dark'}catch(e){}" }} />
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js');try{if(localStorage.getItem('theme')==='dark')document.documentElement.dataset.theme='dark'}catch(e){}" }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link rel="stylesheet" href={FONTS} />
       </head>
       <body>
-        <Loader label={settings.wordmark} />
+        <PageTransition />
         <a href="#main" className="skip">Skip to content</a>
         <main id="main">{children}</main>
         <Footer settings={settings} />
