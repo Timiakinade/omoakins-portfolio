@@ -129,7 +129,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .progress { position: fixed; top: 0; left: 0; z-index: 100; height: 3px; width: 0; background: var(--cs-accent); transition: width 0.1s; }
 
 /* Hero (Iyanu) */
-.cs-hero { position: relative; overflow: hidden; padding: 140px 0 80px; background: var(--cs-surface); border-bottom: 1px solid var(--cs-line); }
+.cs-hero { position: relative; overflow: hidden; padding: 72px 0 80px; background: var(--cs-surface); border-bottom: 1px solid var(--cs-line); }
 .cs-orb { position: absolute; width: 560px; height: 560px; top: -140px; right: -80px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--cs-accent) 14%, transparent) 0%, transparent 65%); pointer-events: none; }
 .cs-hero .eyebrow { color: var(--cs-muted); border-color: var(--cs-accent); margin-bottom: 24px; }
 .cs-hero .eyebrow .badge { margin-right: 8px; background: var(--cs-accent-soft); color: var(--cs-accent); }
@@ -138,7 +138,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .cs-meta { position: relative; display: flex; flex-wrap: wrap; gap: 24px 48px; padding-top: 24px; border-top: 1px solid var(--cs-line); }
 .cs-meta dt { font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--cs-muted); }
 .cs-meta dd { margin: 4px 0 0; font-size: 15px; }
-.cs-cover { padding-top: 64px; }
+.cs-cover { width: 100%; }
+.cs-cover .media { border-radius: 0; }
+.cs-cover .cover-phones { border-radius: 0; height: clamp(480px, 56vw, 820px); }
 
 /* Layout: ChapterNav (Aliyu) + content */
 .cs-layout { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 106px; }
@@ -212,7 +214,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .chapters a.active { border-color: var(--cs-accent); }
   .chapters a.active::before { display: none; }
   .decision { grid-template-columns: 1fr; gap: 8px; }
-  .cs-hero { padding: 112px 0 56px; }
+  .cs-hero { padding: 48px 0 56px; }
   .proto { padding: 32px 20px; }
 }
 
