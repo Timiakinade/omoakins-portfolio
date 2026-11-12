@@ -5,9 +5,9 @@
 :root {
   /* Light is the default. Dark is the inverse, toggled from the dock. */
   --bg: #ffffff;
-  --surface: #f6f6f4;
-  --inset: #eeeeea;
-  --line: #e7e7e3;
+  --surface: #fbfbfa;
+  --inset: #f4f4f2;
+  --line: #ebebe8;
   --line-2: #d9d9d4;
   --ink: #111111;
   --muted: #6b6b66;
@@ -130,7 +130,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 /* Hero (Iyanu) */
 .cs-hero { position: relative; overflow: hidden; padding: 72px 0 80px; background: var(--cs-surface); border-bottom: 1px solid var(--cs-line); }
-.cs-orb { position: absolute; width: 560px; height: 560px; top: -140px; right: -80px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--cs-accent) 14%, transparent) 0%, transparent 65%); pointer-events: none; }
+.cs-orb { position: absolute; width: 560px; height: 560px; top: -140px; right: -80px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--cs-accent) 5%, transparent) 0%, transparent 65%); pointer-events: none; }
 .cs-hero .eyebrow { color: var(--cs-muted); border-color: var(--cs-accent); margin-bottom: 24px; }
 .cs-hero .eyebrow .badge { margin-right: 8px; background: var(--cs-accent-soft); color: var(--cs-accent); }
 .cs-title { position: relative; font-family: var(--cs-display); font-style: var(--cs-display-style); font-weight: var(--cs-display-weight); font-size: clamp(44px, 7vw, 88px); line-height: 1; letter-spacing: -0.03em; max-width: 1040px; margin-bottom: 26px; }
