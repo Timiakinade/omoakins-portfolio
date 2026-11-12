@@ -511,3 +511,23 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .marquee-track { animation: none; }
   .marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
 }
+
+/* Loader: three monochrome sheets that flap away in different directions */
+.loader { display: none; }
+.js .loader { display: block; position: fixed; inset: 0; z-index: 1000; overflow: hidden; perspective: 1800px; perspective-origin: 50% 50%; }
+.js.seen .loader { display: none; }
+html.loading { overflow: hidden; }
+.lp { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; will-change: transform; }
+.lp-white { z-index: 1; background: #ffffff; transform-origin: 50% 100%; }
+.lp-grey { z-index: 2; background: #8d8d8d; transform-origin: 0 50%; }
+.lp-black { z-index: 3; background: #0b0b0b; color: #ffffff; transform-origin: 50% 0; }
+.loader-label { position: absolute; left: 24px; top: 20px; font-family: var(--f-display); font-size: 34px; line-height: 1; letter-spacing: 1px; }
+.loader-num { position: absolute; left: 24px; bottom: 8px; font-family: var(--f-display); font-size: clamp(120px, 22vw, 320px); line-height: 0.85; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
+.loader.go .lp-black { animation: flap-up 0.95s cubic-bezier(0.76, 0, 0.24, 1) forwards; }
+.loader.go .lp-grey { animation: flap-left 0.95s cubic-bezier(0.76, 0, 0.24, 1) 0.2s forwards; }
+.loader.go .lp-white { animation: flap-down 0.95s cubic-bezier(0.76, 0, 0.24, 1) 0.4s forwards; }
+@keyframes flap-up { to { transform: rotateX(110deg); } }
+@keyframes flap-left { to { transform: rotateY(-110deg); } }
+@keyframes flap-down { to { transform: rotateX(-110deg); } }
+@media (max-width: 720px) { .loader-label { left: 16px; top: 16px; font-size: 28px; } .loader-num { left: 16px; } }
+@media (prefers-reduced-motion: reduce) { .js .loader { display: none; } }
