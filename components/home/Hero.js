@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
 
 // Hero: giant name ticker behind the portrait (difference blend), socials,
 // role lines, and a pixel dissolve that darkens the hero from the bottom as you scroll out.
-export default function Hero({ name, portrait, roles = [], socials = [] }) {
+export default function Hero({ name, portrait, portraitDark, roles = [], socials = [] }) {
   const root = useRef(null);
   const track = useRef(null);
   const canvas = useRef(null);
@@ -78,7 +78,8 @@ export default function Hero({ name, portrait, roles = [], socials = [] }) {
   return (
     <section className="hx-hero" ref={root} aria-label="Introduction">
       <h1 className="hx-sr">{name}, {roles.join(" and ").toLowerCase()}</h1>
-      {portrait && <img className="hx-photo" src={portrait} alt={`Portrait of ${name}`} fetchPriority="high" />}
+      {portrait && <img className={`hx-photo ${portraitDark ? "is-light" : ""}`} src={portrait} alt={`Portrait of ${name}`} fetchPriority="high" />}
+      {portraitDark && <img className="hx-photo is-dark" src={portraitDark} alt="" aria-hidden="true" fetchPriority="high" />}
 
       <div className="hx-ticker" aria-hidden="true">
         <div className="hx-track" ref={track}>

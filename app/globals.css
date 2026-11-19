@@ -540,6 +540,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .hx-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .hx-hero { position: relative; height: 100svh; min-height: 620px; overflow: hidden; isolation: isolate; background: var(--bg); color: #fff; }
 .hx-photo { position: absolute; left: 50%; bottom: 0; height: 100%; width: auto; max-width: none; transform: translateX(-50%); z-index: 1; animation: hx-fade 1.1s var(--ease) both; }
+.hx-photo.is-dark { display: none; }
+[data-theme="dark"] .hx-photo.is-dark { display: block; }
+[data-theme="dark"] .hx-photo.is-light { display: none; }
 @keyframes hx-fade { from { opacity: 0; } to { opacity: 1; } }
 .hx-ticker { position: absolute; left: 0; right: 0; top: 37%; z-index: 3; mix-blend-mode: difference; pointer-events: none; overflow: visible; }
 .hx-track { display: flex; width: max-content; white-space: nowrap; will-change: transform; font-family: var(--f-body); font-weight: 500; font-size: clamp(140px, 19.4vw, 340px); line-height: 0.82; letter-spacing: -0.04em; color: #fff; }
