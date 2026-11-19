@@ -1,8 +1,9 @@
 import { Suspense } from "react";
-import Button from "@/components/Button";
+import Hero from "@/components/home/Hero";
+import Intro from "@/components/home/Intro";
+import Services from "@/components/home/Services";
 import WorkSection from "@/components/WorkSection";
 import Faq from "@/components/Faq";
-import Marquee from "@/components/Marquee";
 import SectionRail from "@/components/SectionRail";
 import { getCaseStudies, getSettings } from "@/lib/data";
 
@@ -14,27 +15,15 @@ export default async function Home() {
 
   return (
     <>
-      <section className="container home-hero" aria-labelledby="statement">
-        <h1 id="statement" className="statement">
-          <span>{h.statement[0]}</span>
-          <span className="accent">{h.statement[1]}</span>
-        </h1>
-        <div className="hero-meta">
-          <div className="who">{s.name && <span>{s.name}</span>}<span>{s.role}</span><span>{s.location}</span></div>
-          <span className="live"><span className="pulse" aria-hidden="true" />{s.availability}</span>
-        </div>
-
-        <div className="home-intro reveal">
-          <p className="lead"><span className="soft">{h.intro}</span> {h.heading}</p>
-          <p className="sub">{h.body}</p>
-          <div className="ctas">
-            <Button href="/#work">View work</Button>
-            <Button href={s.email ? `mailto:${s.email}` : "/contact"} ghost>Get in touch</Button>
-          </div>
-        </div>
-      </section>
-
-      <Marquee items={s.clients} />
+      <Hero
+        name={s.heroName}
+        portrait={h.portrait}
+        roles={s.roleLines}
+        links={[{ href: "/#work", label: "Work" }, { href: "/about", label: "About" }, { href: "/contact", label: "Contact" }]}
+        socials={s.socials.filter((x) => x.url)}
+      />
+      <Intro lead={h.intro2.lead} soft={h.intro2.soft} body={h.body} cta={h.intro2.cta} />
+      <Services items={s.services} />
 
       <SectionRail items={[{ id: "work", label: "Work" }, { id: "faq", label: "Questions" }, { id: "contact", label: "Contact" }]} />
 
