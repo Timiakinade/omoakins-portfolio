@@ -19,7 +19,6 @@ export default async function Home() {
         name={s.heroName}
         portrait={h.portrait}
         roles={s.roleLines}
-        links={[{ href: "/#work", label: "Work" }, { href: "/about", label: "About" }, { href: "/contact", label: "Contact" }]}
         socials={s.socials.filter((x) => x.url)}
       />
       <Intro lead={h.intro2.lead} soft={h.intro2.soft} body={h.body} cta={h.intro2.cta} />

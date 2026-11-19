@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
-const DARK = "#121111";
 
-// Hero: giant name ticker behind the portrait (difference blend), nav row, socials,
+// Hero: giant name ticker behind the portrait (difference blend), socials,
 // role lines, and a pixel dissolve that darkens the hero from the bottom as you scroll out.
-export default function Hero({ name, portrait, roles = [], links = [], socials = [] }) {
+export default function Hero({ name, portrait, roles = [], socials = [] }) {
   const root = useRef(null);
   const track = useRef(null);
   const canvas = useRef(null);
@@ -21,6 +20,7 @@ export default function Hero({ name, portrait, roles = [], links = [], socials =
     let raf = 0, unit = 0, last = performance.now(), sm = window.scrollY;
     let W = 0, H = 0, cell = 40, cols = 0, rows = 0, rnd = new Float32Array(0), dpr = 1, drawQueued = false;
 
+    const bg = () => getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#ffffff";
     const measure = () => { const f = tr.firstElementChild; if (f) unit = f.getBoundingClientRect().width; };
 
     const draw = () => {
@@ -30,7 +30,7 @@ export default function Hero({ name, portrait, roles = [], links = [], socials =
       ctx.clearRect(0, 0, W, H);
       const f = p * 1.25 - 0.1;
       if (f <= 0) return;
-      ctx.fillStyle = DARK;
+      ctx.fillStyle = bg();
       for (let r = 0; r < rows; r++) {
         const t = (rows - 1 - r + 0.5) / rows; // 0 at the bottom, 1 at the top
         for (let c = 0; c < cols; c++) {
@@ -67,10 +67,12 @@ export default function Hero({ name, portrait, roles = [], links = [], socials =
 
     size();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+    const mo = new MutationObserver(queueDraw);
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "class"] });
     window.addEventListener("resize", size);
     window.addEventListener("scroll", queueDraw, { passive: true });
     raf = requestAnimationFrame(loop);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", size); window.removeEventListener("scroll", queueDraw); };
+    return () => { mo.disconnect(); cancelAnimationFrame(raf); window.removeEventListener("resize", size); window.removeEventListener("scroll", queueDraw); };
   }, []);
 
   return (
@@ -83,11 +85,6 @@ export default function Hero({ name, portrait, roles = [], links = [], socials =
           {Array.from({ length: 6 }).map((_, i) => <span key={i}>{name}<i className="hx-dot" /></span>)}
         </div>
       </div>
-
-      <nav className="hx-nav" aria-label="Home">
-        <span>© {name}</span>
-        <div className="hx-links">{links.map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}</div>
-      </nav>
 
       {socials.length > 0 && (
         <ul className="hx-socials">
