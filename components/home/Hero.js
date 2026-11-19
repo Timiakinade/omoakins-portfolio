@@ -18,7 +18,7 @@ export default function Hero({ name, portrait, roles = [], links = [], socials =
     const tr = track.current;
     const cv = canvas.current;
     const ctx = cv.getContext("2d");
-    let raf = 0, unit = 0, x = 0, last = performance.now(), lastY = window.scrollY, vel = 0;
+    let raf = 0, unit = 0, last = performance.now(), sm = window.scrollY;
     let W = 0, H = 0, cell = 40, cols = 0, rows = 0, rnd = new Float32Array(0), dpr = 1, drawQueued = false;
 
     const measure = () => { const f = tr.firstElementChild; if (f) unit = f.getBoundingClientRect().width; };
@@ -52,15 +52,15 @@ export default function Hero({ name, portrait, roles = [], links = [], socials =
       draw();
     };
 
+    // The name tracks the scroll: it only moves when you scroll, easing toward its target (about 0.6px per px scrolled).
     const loop = (now) => {
       const dt = Math.min(64, now - last) / 1000; last = now;
       const y = window.scrollY;
-      const v = Math.abs(y - lastY) / Math.max(dt, 0.001); lastY = y;
-      vel += (Math.min(v, 3000) - vel) * Math.min(1, dt * 6);
+      sm += (y - sm) * Math.min(1, dt * 7);
       if (!reduce && y < H * 1.2 && unit) {
-        x -= (36 + vel * 0.12) * dt;
-        if (x <= -unit) x += unit;
-        tr.style.transform = `translate3d(${x}px,0,0)`;
+        const pos = -(sm * 0.6) - unit * 0.18;
+        const tx = (pos % unit) - (pos % unit > 0 ? unit : 0);
+        tr.style.transform = `translate3d(${tx}px,0,0)`;
       }
       raf = requestAnimationFrame(loop);
     };
@@ -86,7 +86,7 @@ export default function Hero({ name, portrait, roles = [], links = [], socials =
 
       <nav className="hx-nav" aria-label="Home">
         <span>© {name}</span>
-        {links.map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}
+        <div className="hx-links">{links.map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}</div>
       </nav>
 
       {socials.length > 0 && (
