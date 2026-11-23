@@ -309,6 +309,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .work-head p { color: var(--muted); margin-top: 12px; }
 .filters { display: flex; gap: 8px; flex-wrap: wrap; }
 .filter { min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--muted); font-size: 14px; transition: 0.2s; }
+.work-empty { color: var(--muted); padding: 56px 0; border-top: 1px solid var(--line); }
 .filter:hover { color: var(--ink); border-color: var(--faint); }
 .filter[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
 .subgroup-head { margin: 40px 0 8px; } .subgroup-head h3 { font-size: 20px; font-weight: 500; } .subgroup-head p { color: var(--muted); font-size: 14px; }
@@ -599,3 +600,5 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .hx-label { padding-left: 16px; }
 }
 @media (prefers-reduced-motion: reduce) { .hx-photo, .hx-num { animation: none; } }
+
+@media (max-width: 480px) { .filters { gap: 6px; } .filter { padding: 0 14px; } }
