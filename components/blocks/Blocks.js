@@ -2,6 +2,7 @@ import Media from "../Media";
 import ExpandImage from "../ExpandImage";
 import Button from "../Button";
 import PinGallery from "./PinGallery";
+import Carousel from "./Carousel";
 import { Play, ArrowUpRight } from "../Icons";
 
 const paragraphs = (body) => (Array.isArray(body) ? body : String(body || "").split(/\n\n+/)).filter(Boolean);
@@ -31,6 +32,8 @@ export function Block({ block, study }) {
           {(block.items || []).map((it, i) => <Figure key={i} item={it} />)}
         </div>
       );
+    case "carousel":
+      return <Carousel items={block.items} label={block.label} />;
     case "slider":
       return <PinGallery items={block.items} />;
     case "stats":
