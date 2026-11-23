@@ -31,7 +31,7 @@ export default function Carousel({ items = [], label = "Carousel" }) {
     <div className="car">
       <div className="car-row" ref={row} role="list" aria-label={label}>
         {items.map((it, i) => (
-          <button key={i} type="button" role="listitem" className="car-item" onClick={() => setOpen(i)} aria-label={`Open ${it.alt || `slide ${i + 1}`}, ${i + 1} of ${n}`}>
+          <button key={i} type="button" role="listitem" className="car-item" onClick={(e) => { if (e.currentTarget.closest("[data-pl]")) return; setOpen(i); }} aria-label={`Open ${it.alt || `slide ${i + 1}`}, ${i + 1} of ${n}`}>
             <img src={it.src} alt={it.alt || ""} loading="lazy" />
           </button>
         ))}

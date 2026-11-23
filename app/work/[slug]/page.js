@@ -1,3 +1,4 @@
+import ProjectLightbox from "@/components/ProjectLightbox";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Media from "@/components/Media";
@@ -36,6 +37,7 @@ export default async function CaseStudy({ params }) {
 
   return (
     <>
+      <ProjectLightbox enabled={study.category !== "product"}>
       <article className="cs">
         {/* Full width cover first, then the title block */}
         {(study.cover?.src || study.cover?.phones?.length) && <div className="cs-cover">
@@ -82,6 +84,7 @@ export default async function CaseStudy({ params }) {
           </div>
         </div>
       </article>
+      </ProjectLightbox>
 
       {/* Aliyu's next project */}
       {total > 1 && next && (
