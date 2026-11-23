@@ -25,7 +25,7 @@ export default async function Home() {
       <Intro lead={h.intro2.lead} soft={h.intro2.soft} body={h.body} cta={h.intro2.cta} />
       <Services items={s.services} />
 
-      <SectionRail items={[{ id: "intro", label: "Intro" }, { id: "services", label: "Services" }, { id: "work", label: "Work" }, { id: "faq", label: "Questions" }, { id: "contact", label: "Contact" }]} />
+      <SectionRail items={[{ id: "intro", label: "Short story" }, { id: "services", label: "Services" }, { id: "work", label: "Work" }, { id: "faq", label: "Questions" }, { id: "contact", label: "Contact" }]} />
 
       <Suspense fallback={null}>
         <WorkSection studies={studies} categories={s.categories} subgroups={s.subgroups} />
