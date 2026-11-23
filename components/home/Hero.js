@@ -1,58 +1,26 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef } from "react";
 
-
-// Hero: giant name ticker behind the portrait (difference blend), socials,
-// role lines, and a pixel dissolve that darkens the hero from the bottom as you scroll out.
+// Hero: giant name ticker behind the portrait (difference blend), socials and role lines.
+// Scroll behaviour follows the reference: the name drifts on its own and is pushed by the scroll,
+// the portrait travels slower than the page (parallax), the role lines slide in opposite directions.
 export default function Hero({ name, portrait, portraitDark, roles = [], socials = [] }) {
   const root = useRef(null);
   const track = useRef(null);
-  const canvas = useRef(null);
+  const photo = useRef(null);
+  const role = useRef(null);
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const el = root.current;
     const tr = track.current;
-    const cv = canvas.current;
-    const ctx = cv.getContext("2d");
-    let raf = 0, unit = 0, last = performance.now(), sm = window.scrollY, drift = 0;
-    let W = 0, H = 0, cell = 40, cols = 0, rows = 0, rnd = new Float32Array(0), dpr = 1, drawQueued = false;
+    const ph = photo.current;
+    const lines = role.current ? Array.from(role.current.children) : [];
+    let raf = 0, unit = 0, last = performance.now(), sm = window.scrollY, drift = 0, H = 1;
 
-    const bg = () => getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#ffffff";
-    const measure = () => { const f = tr.firstElementChild; if (f) unit = f.getBoundingClientRect().width; };
+    const measure = () => { const f = tr.firstElementChild; if (f) unit = f.getBoundingClientRect().width; H = el.getBoundingClientRect().height || 1; };
 
-    const draw = () => {
-      drawQueued = false;
-      const p = Math.max(0, Math.min(1, window.scrollY / H));
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, W, H);
-      const f = p * 1.25 - 0.1;
-      if (f <= 0) return;
-      ctx.fillStyle = bg();
-      for (let r = 0; r < rows; r++) {
-        const t = (rows - 1 - r + 0.5) / rows; // 0 at the bottom, 1 at the top
-        for (let c = 0; c < cols; c++) {
-          if (f - t * 0.75 > rnd[r * cols + c] * 0.35) ctx.fillRect(c * cell, r * cell, cell + 0.6, cell + 0.6);
-        }
-      }
-    };
-    const queueDraw = () => { if (!drawQueued) { drawQueued = true; requestAnimationFrame(draw); } };
-
-    const size = () => {
-      const r = el.getBoundingClientRect();
-      dpr = Math.min(2, window.devicePixelRatio || 1);
-      W = r.width; H = r.height;
-      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-      cell = Math.max(28, Math.round(W / 26));
-      cols = Math.ceil(W / cell); rows = Math.ceil(H / cell);
-      rnd = Float32Array.from({ length: cols * rows }, () => Math.random());
-      measure();
-      draw();
-    };
-
-    // The name drifts left on its own (one name width every 10s, like the reference) and scrolling pushes it further (about 0.6px per px, eased).
     const loop = (now) => {
       const dt = Math.min(64, now - last) / 1000; last = now;
       const y = window.scrollY;
@@ -62,25 +30,26 @@ export default function Hero({ name, portrait, portraitDark, roles = [], socials
         const pos = -(sm * 0.6) - drift - unit * 0.18;
         const tx = (pos % unit) - (pos % unit > 0 ? unit : 0);
         tr.style.transform = `translate3d(${tx}px,0,0)`;
+        ph.style.transform = `translate3d(0,${sm * 0.4}px,0)`;
+        lines.forEach((l, i) => { l.style.transform = `translate3d(${(i % 2 === 0 ? -1 : 1) * sm * 0.12}px,0,0)`; });
       }
       raf = requestAnimationFrame(loop);
     };
 
-    size();
+    measure();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
-    const mo = new MutationObserver(queueDraw);
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "class"] });
-    window.addEventListener("resize", size);
-    window.addEventListener("scroll", queueDraw, { passive: true });
+    window.addEventListener("resize", measure);
     raf = requestAnimationFrame(loop);
-    return () => { mo.disconnect(); cancelAnimationFrame(raf); window.removeEventListener("resize", size); window.removeEventListener("scroll", queueDraw); };
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", measure); };
   }, []);
 
   return (
     <section className="hx-hero" ref={root} aria-label="Introduction">
       <h1 className="hx-sr">{name}, {roles.join(" and ").toLowerCase()}</h1>
-      {portrait && <img className={`hx-photo ${portraitDark ? "is-light" : ""}`} src={portrait} alt={`Portrait of ${name}`} fetchPriority="high" />}
-      {portraitDark && <img className="hx-photo is-dark" src={portraitDark} alt="" aria-hidden="true" fetchPriority="high" />}
+      <div className="hx-photo-wrap" ref={photo}>
+        {portrait && <img className={`hx-photo ${portraitDark ? "is-light" : ""}`} src={portrait} alt={`Portrait of ${name}`} fetchPriority="high" />}
+        {portraitDark && <img className="hx-photo is-dark" src={portraitDark} alt="" aria-hidden="true" fetchPriority="high" />}
+      </div>
 
       <div className="hx-ticker" aria-hidden="true">
         <div className="hx-track" ref={track}>
@@ -93,9 +62,7 @@ export default function Hero({ name, portrait, portraitDark, roles = [], socials
           {socials.map((s) => <li key={s.label}><a href={s.url} target="_blank" rel="noopener noreferrer">{s.label}</a></li>)}
         </ul>
       )}
-      <p className="hx-role">{roles.map((r) => <span key={r}>{r}</span>)}</p>
-
-      <canvas className="hx-pixels" ref={canvas} aria-hidden="true" />
+      <p className="hx-role" ref={role}>{roles.map((r) => <span key={r}>{r}</span>)}</p>
     </section>
   );
 }
