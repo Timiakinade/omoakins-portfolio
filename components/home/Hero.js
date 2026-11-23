@@ -17,7 +17,7 @@ export default function Hero({ name, portrait, portraitDark, roles = [], socials
     const tr = track.current;
     const cv = canvas.current;
     const ctx = cv.getContext("2d");
-    let raf = 0, unit = 0, last = performance.now(), sm = window.scrollY;
+    let raf = 0, unit = 0, last = performance.now(), sm = window.scrollY, drift = 0;
     let W = 0, H = 0, cell = 40, cols = 0, rows = 0, rnd = new Float32Array(0), dpr = 1, drawQueued = false;
 
     const bg = () => getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#ffffff";
@@ -52,13 +52,14 @@ export default function Hero({ name, portrait, portraitDark, roles = [], socials
       draw();
     };
 
-    // The name tracks the scroll: it only moves when you scroll, easing toward its target (about 0.6px per px scrolled).
+    // The name drifts left on its own (one name width every 10s, like the reference) and scrolling pushes it further (about 0.6px per px, eased).
     const loop = (now) => {
       const dt = Math.min(64, now - last) / 1000; last = now;
       const y = window.scrollY;
       sm += (y - sm) * Math.min(1, dt * 7);
       if (!reduce && y < H * 1.2 && unit) {
-        const pos = -(sm * 0.6) - unit * 0.18;
+        drift += dt * unit * 0.1;
+        const pos = -(sm * 0.6) - drift - unit * 0.18;
         const tx = (pos % unit) - (pos % unit > 0 ? unit : 0);
         tr.style.transform = `translate3d(${tx}px,0,0)`;
       }
