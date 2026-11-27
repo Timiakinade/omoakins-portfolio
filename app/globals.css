@@ -622,3 +622,6 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .lb-next { right: 16px; }
 .lb-count { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.8); font-size: 13px; }
 @media (max-width: 700px) { .lb { padding: 56px 8px; } .lb-nav { top: auto; bottom: 12px; transform: none; } }
+
+/* Home page gutters: leave room on both sides so the fixed section rail never overlaps content */
+@media (min-width: 1600px) { .hx-page { padding-inline: 210px; } }

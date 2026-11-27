@@ -22,6 +22,7 @@ export default async function Home() {
         roles={s.roleLines}
         socials={s.socials.filter((x) => x.url)}
       />
+      <div className="hx-page">
       <Intro lead={h.intro2.lead} soft={h.intro2.soft} body={h.body} cta={h.intro2.cta} />
       <Services items={s.services} />
 
@@ -32,6 +33,7 @@ export default async function Home() {
       </Suspense>
 
       <Faq items={s.faq} categories={s.faqCategories} />
+      </div>
     </>
   );
 }
