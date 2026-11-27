@@ -560,13 +560,13 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .hx-label i { font-style: normal; font-weight: 400; color: var(--muted); }
 
 .hx-intro { padding-bottom: 150px; }
-.hx-statement { margin: 0; padding: 110px 20px 0; max-width: 1360px; font-size: clamp(34px, 5vw, 72px); line-height: 1.08; font-weight: 600; letter-spacing: -0.03em; text-indent: 19%; }
+.hx-statement { margin: 0 auto; padding: 110px clamp(24px, 10vw, 180px) 0; max-width: 1240px; text-align: center; font-size: clamp(28px, 3.6vw, 54px); line-height: 1.12; font-weight: 600; letter-spacing: -0.03em; text-indent: 0; }
 .sx [data-c] { transition: color 0.25s linear; }
 .sx [data-s="0"] { color: color-mix(in srgb, var(--ink) 16%, var(--bg)); }
 .sx [data-s="1"] { color: color-mix(in srgb, var(--ink) 55%, var(--bg)); }
 .sx .sx-ink [data-s="2"] { color: var(--ink); }
 .sx .sx-soft [data-s="2"] { color: var(--muted); }
-.hx-intro-body { margin: 96px 20px 0 calc(51% - 4px); max-width: 540px; }
+.hx-intro-body { margin: 64px auto 0; display: flex; justify-content: center; }
 .hx-intro-body p { margin: 0; color: var(--muted); font-size: 18px; line-height: 1.4; letter-spacing: 0.01em; }
 .hx-pill { display: inline-flex; align-items: center; justify-content: center; margin-top: 56px; height: 64px; padding: 0 44px; border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent); border-radius: 999px; color: var(--muted); font-size: 18px; transition: background 0.45s var(--ease), color 0.45s var(--ease), border-color 0.45s var(--ease); }
 .hx-pill:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
@@ -593,7 +593,6 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .hx-svc-numcol { display: none; }
   .hx-num-m { display: block; position: static; margin: 0 0 24px; font-size: clamp(96px, 30vw, 160px); animation: none; }
   .hx-group:first-child, .hx-group, .hx-group + .hx-group { padding-top: 72px; }
-  .hx-intro-body { margin-left: 20px; }
   .hx-statement { text-indent: 0; padding-top: 72px; }
       .hx-socials { left: 16px; top: 64px; bottom: auto; font-size: 15px; }
   .hx-role { right: 16px; bottom: 32px; }
